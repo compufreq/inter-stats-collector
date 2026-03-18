@@ -73,6 +73,197 @@
     });
   }
 
+  // --- Search functionality ---
+  (function(){
+    var searchIndex=null;
+    var modal=null;
+    var input=null;
+    var resultsDiv=null;
+
+    function el(tag,attrs,children){
+      var e=document.createElement(tag);
+      if(attrs)Object.keys(attrs).forEach(function(k){
+        if(k==='text')e.textContent=attrs[k];
+        else if(k==='class')e.className=attrs[k];
+        else if(k.indexOf('on')===0)e.addEventListener(k.slice(2),attrs[k]);
+        else e.setAttribute(k,attrs[k]);
+      });
+      if(children)children.forEach(function(c){if(c)e.appendChild(typeof c==='string'?document.createTextNode(c):c)});
+      return e;
+    }
+
+    function buildModal(){
+      var searchIcon=document.createElementNS('http://www.w3.org/2000/svg','svg');
+      searchIcon.setAttribute('viewBox','0 0 24 24');
+      var c=document.createElementNS('http://www.w3.org/2000/svg','circle');
+      c.setAttribute('cx','11');c.setAttribute('cy','11');c.setAttribute('r','8');
+      var l=document.createElementNS('http://www.w3.org/2000/svg','line');
+      l.setAttribute('x1','21');l.setAttribute('y1','21');l.setAttribute('x2','16.65');l.setAttribute('y2','16.65');
+      searchIcon.appendChild(c);searchIcon.appendChild(l);
+
+      input=el('input',{'class':'search-input',type:'text',placeholder:'Search documentation...',autocomplete:'off'});
+      var closeBtn=el('button',{'class':'search-close',text:'ESC',onclick:closeSearch});
+      var inputWrap=el('div',{'class':'search-input-wrap'},[searchIcon,input,closeBtn]);
+      resultsDiv=el('div',{'class':'search-results'},[el('div',{'class':'search-empty',text:'Type to search across all documentation pages'})]);
+      var hint=el('div',{'class':'search-hint',text:'Navigate with \u2191\u2193 \u00b7 Open with Enter \u00b7 Close with Esc'});
+      var box=el('div',{'class':'search-box-wrap'},[inputWrap,resultsDiv,hint]);
+      modal=el('div',{'class':'search-modal',onclick:function(e){if(e.target===modal)closeSearch()}},[box]);
+      document.body.appendChild(modal);
+
+      input.addEventListener('input',function(){doSearch(input.value)});
+      input.addEventListener('keydown',function(e){
+        var items=resultsDiv.querySelectorAll('.search-result');
+        var active=resultsDiv.querySelector('.search-result:focus');
+        if(e.key==='ArrowDown'){
+          e.preventDefault();
+          if(!active&&items.length)items[0].focus();
+          else if(active&&active.nextElementSibling&&active.nextElementSibling.classList.contains('search-result'))active.nextElementSibling.focus();
+        }else if(e.key==='ArrowUp'){
+          e.preventDefault();
+          if(active&&active.previousElementSibling&&active.previousElementSibling.classList.contains('search-result'))active.previousElementSibling.focus();
+          else if(active)input.focus();
+        }else if(e.key==='Enter'){
+          e.preventDefault();
+          var focused=resultsDiv.querySelector('.search-result:focus')||items[0];
+          if(focused)window.location.href=focused.getAttribute('href');
+        }else if(e.key==='Escape'){closeSearch()}
+      });
+    }
+
+    function openSearch(){
+      if(!modal)buildModal();
+      modal.classList.add('open');
+      input.value='';
+      while(resultsDiv.firstChild)resultsDiv.removeChild(resultsDiv.firstChild);
+      resultsDiv.appendChild(el('div',{'class':'search-empty',text:'Type to search across all documentation pages'}));
+      setTimeout(function(){input.focus()},50);
+      if(!searchIndex)loadIndex();
+    }
+
+    function closeSearch(){if(modal)modal.classList.remove('open')}
+
+    function loadIndex(){
+      fetch('search-index.json').then(function(r){return r.json()}).then(function(data){
+        searchIndex=data;
+      }).catch(function(){
+        searchIndex=[];
+        while(resultsDiv.firstChild)resultsDiv.removeChild(resultsDiv.firstChild);
+        resultsDiv.appendChild(el('div',{'class':'search-empty',text:'Search index not available'}));
+      });
+    }
+
+    function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+
+    function highlightInto(parent,text,terms){
+      // Build text with <mark> highlights using DOM methods
+      var lower=text.toLowerCase();
+      var positions=[];
+      terms.forEach(function(term){
+        var idx=0;
+        while((idx=lower.indexOf(term,idx))!==-1){
+          positions.push({start:idx,end:idx+term.length});
+          idx+=term.length;
+        }
+      });
+      // Sort and merge overlapping
+      positions.sort(function(a,b){return a.start-b.start});
+      var merged=[];
+      positions.forEach(function(p){
+        if(merged.length&&p.start<=merged[merged.length-1].end){
+          merged[merged.length-1].end=Math.max(merged[merged.length-1].end,p.end);
+        }else{merged.push({start:p.start,end:p.end})}
+      });
+      var last=0;
+      merged.forEach(function(p){
+        if(p.start>last)parent.appendChild(document.createTextNode(text.substring(last,p.start)));
+        var mark=document.createElement('mark');
+        mark.textContent=text.substring(p.start,p.end);
+        parent.appendChild(mark);
+        last=p.end;
+      });
+      if(last<text.length)parent.appendChild(document.createTextNode(text.substring(last)));
+    }
+
+    function doSearch(query){
+      while(resultsDiv.firstChild)resultsDiv.removeChild(resultsDiv.firstChild);
+      if(!searchIndex||!query.trim()){
+        resultsDiv.appendChild(el('div',{'class':'search-empty',text:query.trim()?'Loading...':'Type to search across all documentation pages'}));
+        return;
+      }
+      var q=query.toLowerCase().trim();
+      var terms=q.split(/\s+/).filter(function(t){return t.length>0});
+      var scored=[];
+
+      searchIndex.forEach(function(section){
+        var text=(section.heading+' '+section.text+' '+section.pageTitle).toLowerCase();
+        var score=0;var allMatch=true;
+        terms.forEach(function(term){
+          if(text.indexOf(term)===-1){allMatch=false}
+          else{
+            if(section.heading.toLowerCase().indexOf(term)!==-1)score+=10;
+            var idx=0;var count=0;
+            while((idx=text.indexOf(term,idx))!==-1){count++;idx+=term.length}
+            score+=count;
+          }
+        });
+        if(allMatch&&score>0)scored.push({section:section,score:score});
+      });
+
+      scored.sort(function(a,b){return b.score-a.score});
+
+      if(scored.length===0){
+        resultsDiv.appendChild(el('div',{'class':'search-empty',text:'No results for "'+query.trim()+'"'}));
+        return;
+      }
+
+      scored.slice(0,20).forEach(function(item){
+        var s=item.section;
+        var url=s.page+(s.anchor?'#'+s.anchor:'');
+        var a=el('a',{'class':'search-result',href:url,tabindex:'0'});
+        a.appendChild(el('div',{'class':'sr-page',text:s.pageTitle}));
+        var headingDiv=el('div',{'class':'sr-heading'});
+        highlightInto(headingDiv,s.heading,terms);
+        a.appendChild(headingDiv);
+        // Snippet
+        var lower=s.text.toLowerCase();
+        var pos=-1;
+        for(var i=0;i<terms.length;i++){pos=lower.indexOf(terms[i]);if(pos!==-1)break}
+        if(pos===-1)pos=0;
+        var start=Math.max(0,pos-60);
+        var end=Math.min(s.text.length,pos+200);
+        var snippet=(start>0?'...':'')+s.text.substring(start,end)+(end<s.text.length?'...':'');
+        var textDiv=el('div',{'class':'sr-text'});
+        highlightInto(textDiv,snippet,terms);
+        a.appendChild(textDiv);
+        resultsDiv.appendChild(a);
+      });
+    }
+
+    // Global keyboard shortcut: Ctrl/Cmd + K or /
+    document.addEventListener('keydown',function(e){
+      if((e.ctrlKey||e.metaKey)&&e.key==='k'){e.preventDefault();openSearch()}
+      if(e.key==='/'&&!['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName)){e.preventDefault();openSearch()}
+      if(e.key==='Escape')closeSearch();
+    });
+
+    // Add search trigger button to nav
+    var navLinks=document.getElementById('nav-links');
+    if(navLinks){
+      var svgNS='http://www.w3.org/2000/svg';
+      var icon=document.createElementNS(svgNS,'svg');
+      icon.setAttribute('width','14');icon.setAttribute('height','14');icon.setAttribute('viewBox','0 0 24 24');
+      icon.setAttribute('fill','none');icon.setAttribute('stroke','currentColor');icon.setAttribute('stroke-width','2');
+      var ci=document.createElementNS(svgNS,'circle');ci.setAttribute('cx','11');ci.setAttribute('cy','11');ci.setAttribute('r','8');
+      var li=document.createElementNS(svgNS,'line');li.setAttribute('x1','21');li.setAttribute('y1','21');li.setAttribute('x2','16.65');li.setAttribute('y2','16.65');
+      icon.appendChild(ci);icon.appendChild(li);
+      var kbd=el('kbd',{text:'/'});
+      var btn=el('button',{'class':'search-trigger',onclick:openSearch},[icon,document.createTextNode('Search '),kbd]);
+      var ghBtn=navLinks.querySelector('.gh-btn');
+      if(ghBtn)navLinks.insertBefore(btn,ghBtn);
+      else navLinks.appendChild(btn);
+    }
+  })();
+
   // Highlight current page in nav + dropdown
   (function(){
     var path=window.location.pathname.split('/').pop()||'index.html';
