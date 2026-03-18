@@ -51,8 +51,9 @@ jobs:
           print("Fetching Swiss opendata.swiss organizations...")
           swiss = fetch_json("https://ckan.opendata.swiss/api/3/action/organization_list?all_fields=true&limit=500")
           if swiss and swiss.get("success"):
-              orgs = [o for o in swiss["result"] if o.get("package_count", 0) > 0]
-              print(f"  Swiss: {len(orgs)} organizations with datasets")
+              total = len(swiss["result"])
+              active = sum(1 for o in swiss["result"] if o.get("package_count", 0) > 0)
+              print(f"  Swiss: {total} organizations ({active} with datasets)")
               with open("docs/swiss-orgs-data.json", "w") as f:
                   json.dump(swiss, f)
           else:
@@ -69,8 +70,9 @@ jobs:
           if hdx1 and hdx1.get("success"):
               if hdx2 and hdx2.get("success"):
                   hdx1["result"].extend(hdx2["result"])
-              orgs = [o for o in hdx1["result"] if o.get("package_count", 0) > 0]
-              print(f"  HDX: {len(orgs)} organizations with datasets")
+              total = len(hdx1["result"])
+              active = sum(1 for o in hdx1["result"] if o.get("package_count", 0) > 0)
+              print(f"  HDX: {total} organizations ({active} with datasets)")
               with open("docs/hdx-orgs-data.json", "w") as f:
                   json.dump(hdx1, f)
           else:

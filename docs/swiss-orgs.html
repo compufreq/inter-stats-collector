@@ -82,6 +82,7 @@
   </div>
   <div class="filter-group"><label>Per page:</label><select class="fsel" id="per-page"><option value="25">25</option><option value="50" selected>50</option><option value="100">100</option><option value="0">All</option></select></div>
   <label class="cb-label"><input type="checkbox" id="deep-search"> Search in descriptions</label>
+  <label class="cb-label"><input type="checkbox" id="show-inactive"> Show orgs with 0 datasets</label>
 </div>
 
 <div class="table-wrap">
@@ -116,10 +117,10 @@ async function fetchOrgs(){
     try{resp=await fetch(STATIC);if(!resp.ok)throw 1;fetch(META).then(function(r){return r.json()}).then(function(m){if(m.fetched_at)document.getElementById('stats-badge').title='Cached: '+new Date(m.fetched_at).toLocaleString()}).catch(function(){});}
     catch(e){resp=await fetch(LIVE);if(!resp.ok)throw new Error('HTTP '+resp.status)}
     var data=await resp.json();if(!data.success)throw new Error('API error');
-    allOrgs=data.result.filter(function(o){return(o.package_count||0)>0}).map(function(o){
+    allOrgs=data.result.map(function(o){
       return{name:o.name,title:t(o.title)||t(o.display_name)||o.name,count:o.package_count||0,
         desc:t(o.description)||'',created:o.created||'',image:o.image_display_url||o.image_url||'',
-        url:o.url||'',state:o.state||'',_raw:o};
+        url:o.url||'',state:o.state||'',displayName:t(o.display_name)||'',_raw:o};
     });
     document.getElementById('loading').style.display='none';
     document.getElementById('table').style.display='';
@@ -133,11 +134,14 @@ function getFiltered(){
   var minDs=parseInt(document.getElementById('min-ds').value)||0;
   var maxDs=parseInt(document.getElementById('max-ds').value)||Infinity;
   var deep=document.getElementById('deep-search').checked;
+  var showInactive=document.getElementById('show-inactive').checked;
   return allOrgs.filter(function(o){
+    if(!showInactive&&o.count===0)return false;
     if(o.count<minDs||o.count>maxDs)return false;
     if(!q)return true;
     if(o.name.toLowerCase().indexOf(q)!==-1||o.title.toLowerCase().indexOf(q)!==-1)return true;
-    if(deep&&o.desc.toLowerCase().indexOf(q)!==-1)return true;
+    if(o.displayName&&o.displayName.toLowerCase().indexOf(q)!==-1)return true;
+    if(deep&&o.desc&&o.desc.toLowerCase().indexOf(q)!==-1)return true;
     return false;
   });
 }
@@ -176,8 +180,10 @@ function render(){
 
   page.forEach(function(o,i){
     var isExp=expandedSlug===o.name;
+    var isInactive=o.count===0;
     // Main row
     var tr=document.createElement('tr');tr.className='org-row'+(isExp?' expanded':'');
+    if(isInactive)tr.style.opacity='0.45';
     tr.addEventListener('click',function(e){if(e.target.classList.contains('slug'))return;toggleExpand(o.name)});
 
     var tdE=document.createElement('td');var ei=document.createElement('span');ei.className='expand-icon';ei.textContent='\u25B6';tdE.appendChild(ei);tr.appendChild(tdE);
@@ -267,6 +273,7 @@ document.getElementById('min-ds').addEventListener('input',function(){currentPag
 document.getElementById('max-ds').addEventListener('input',function(){currentPage=1;render()});
 document.getElementById('per-page').addEventListener('change',function(){currentPage=1;render()});
 document.getElementById('deep-search').addEventListener('change',function(){currentPage=1;render()});
+document.getElementById('show-inactive').addEventListener('change',function(){currentPage=1;render()});
 
 document.querySelectorAll('#sort-pills .pill').forEach(function(pill){
   pill.addEventListener('click',function(){
