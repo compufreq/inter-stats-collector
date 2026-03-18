@@ -534,7 +534,7 @@
     <svg class="close-icon" viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg>
   </button>
   <div class="links" id="nav-links">
-    <a href="#" onclick="closeMobileMenu()">Home</a>
+    <a href="./">Home</a>
     <a href="https://github.com/compufreq/inter-stats-collector/wiki" target="_blank">Wiki</a>
     <div class="dropdown">
       <button class="dropdown-toggle">Docs Hub <span class="caret">&#9660;</span></button>
@@ -772,6 +772,10 @@
 </footer>
 
 <script>
+// Scroll to top on fresh load (disable browser scroll restoration)
+if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+if (!window.location.hash) window.scrollTo(0, 0);
+
 // Highlight current page in nav
 (function(){
   var p=location.pathname.split('/').pop()||'index.html';
