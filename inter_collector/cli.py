@@ -36,9 +36,8 @@ def _setup_logging(verbose: bool) -> None:
 @click.option("--stats", type=click.Choice(["all", "europe", "uk", "switzerland", "unhcr", "hdx"]),
               default="all", show_default=True,
               help="Statistical data source to use")
-@click.option("--scope", type=click.Choice(["bfs", "all"]),
-              default="bfs", show_default=True,
-              help="Swiss data scope: 'bfs' for BFS only (default), 'all' for all organizations")
+@click.option("--scope", default=None, type=str,
+              help="Organization filter for Swiss/HDX. Use org slug (e.g., 'unhcr', 'wfp', 'iom') or 'all' for everything")
 @click.option("--formats", default=None, type=str,
               help="Comma-separated data formats to download for Swiss source (default: csv,xls,ods,json)")
 @click.option("--year-from", default=None, type=int,
@@ -49,7 +48,7 @@ def _setup_logging(verbose: bool) -> None:
 def main(ctx, stats, scope, formats, year_from, year_to):
     """International Statistics Data Collector.
 
-    Bulk-download statistical datasets from official government sources.
+    Bulk-download statistical and humanitarian datasets from official sources.
     Use --stats to select the data source (defaults to all).
 
     \b
@@ -59,16 +58,26 @@ def main(ctx, stats, scope, formats, year_from, year_to):
       switzerland  Swiss FSO via opendata.swiss — ~3,200+ datasets
       uk           UK ONS — Office for National Statistics
       unhcr        UNHCR Refugee Statistics — 6 endpoints × 75 years
-      hdx          HDX Humanitarian Data Exchange — UNHCR datasets
+      hdx          HDX Humanitarian Data Exchange — 481 organizations
 
     \b
-    Swiss/HDX-specific options:
-      --scope bfs   Only default org datasets (BFS for Swiss, UNHCR for HDX)
-      --scope all   All organizations
-      --formats     Comma-separated: csv,xls,ods,json (default: all)
+    Swiss/HDX --scope option (organization filter):
+      (default)    BFS for Swiss, UNHCR for HDX
+      --scope all  All organizations on the platform
+      --scope ORG  Specific org slug (e.g., wfp, iom, world-bank-group)
 
     \b
-    UNHCR-specific options:
+    Common HDX --scope values:
+      unhcr, wfp, world-bank-group, world-health-organization,
+      unicef-data, fao, international-organization-for-migration,
+      unesco, unfpa, ifrc, acled, ocha-fiss, reach-initiative
+
+    \b
+    --formats: Comma-separated data formats (default: all available)
+      e.g., --formats csv,xls
+
+    \b
+    UNHCR --year options:
       --year-from   Start year (default: 1951)
       --year-to     End year (default: latest available)
     """
@@ -78,9 +87,13 @@ def main(ctx, stats, scope, formats, year_from, year_to):
     # Build kwargs for source-specific options
     source_kwargs = {}
 
-    # Swiss-specific
-    if scope == "all":
-        source_kwargs["org_filter"] = ""  # empty = no filter = all orgs
+    # --scope: organization filter for Swiss and HDX sources
+    # "all" → empty string (no filter), any other value → org slug
+    if scope is not None:
+        if scope.lower() == "all":
+            source_kwargs["org_filter"] = ""  # empty = no filter = all orgs
+        else:
+            source_kwargs["org_filter"] = scope.lower()
     if formats:
         source_kwargs["download_formats"] = {f.strip().upper() for f in formats.split(",")}
 
