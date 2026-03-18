@@ -56,9 +56,12 @@ Currently supports:
 
 ## Quick Start
 
+No pre-setup required — all output directories, state files, and tree indexes are created automatically on first run.
+
 ```bash
-# Install
-cd inter_stats_data_collector
+# Clone and install
+git clone https://github.com/compufreq/inter-stats-collector.git
+cd inter-stats-collector
 pip install -e .
 
 # Download from ALL sources (default — Eurostat + Swiss + UK ONS + UNHCR + HDX)
