@@ -142,7 +142,8 @@
     .dropdown-toggle { cursor: pointer; color: var(--text-dim); font-size: 0.9rem; text-decoration: none; background: none; border: none; font-family: inherit; display: flex; align-items: center; gap: 0.3rem; padding: 0; transition: color 0.2s; }
     .dropdown-toggle:hover { color: var(--text-bright); }
     .dropdown-toggle .caret { font-size: 0.6rem; transition: transform 0.2s; }
-    .dropdown-menu { display: none; position: absolute; top: calc(100% + 0.5rem); left: 50%; transform: translateX(-50%); background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0.4rem 0; min-width: 200px; box-shadow: 0 8px 32px rgba(0,0,0,0.4); z-index: 200; }
+    .dropdown-menu { display: none; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0.6rem 0 0.4rem; min-width: 200px; box-shadow: 0 8px 32px rgba(0,0,0,0.4); z-index: 200; }
+    .dropdown-menu::before { content: ''; position: absolute; top: -0.5rem; left: 0; right: 0; height: 0.5rem; }
     .dropdown:hover .dropdown-menu { display: block; }
     .dropdown:hover .dropdown-toggle .caret { transform: rotate(180deg); }
     .dropdown-menu a { display: block; padding: 0.4rem 1rem; color: var(--text-dim); text-decoration: none; font-size: 0.85rem; transition: all 0.15s; white-space: nowrap; }
