@@ -17,7 +17,6 @@ dependencies = [
 
 [project.scripts]
 inter-collect = "inter_collector.cli:main"
-eurostat-collect = "inter_collector.cli:main"
 
 [tool.setuptools.packages.find]
 include = ["inter_collector*"]

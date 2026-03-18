@@ -35,7 +35,6 @@ Currently supports:
 - [Filtering](#filtering)
 - [Platform Support](#platform-support)
 - [Configuration & Tuning](#configuration--tuning)
-- [Migration from v1](#migration-from-v1)
 - [Eurostat API Reference](#eurostat-api-reference)
 
 ---
@@ -92,8 +91,6 @@ inter-collect status
 # Check a single source
 inter-collect --stats europe status
 ```
-
-The legacy command `eurostat-collect` still works as an alias for `inter-collect`.
 
 ---
 
@@ -528,7 +525,7 @@ pip install -e .
 
 ## Commands & Usage
 
-The CLI is invoked as `inter-collect` (new name) or `eurostat-collect` (legacy alias). On Windows, if neither is on PATH, use `python -m inter_collector.cli`.
+The CLI is invoked as `inter-collect`. On Windows, if it's not on PATH, use `python -m inter_collector.cli`.
 
 All commands accept `--stats` before the subcommand to select the data source:
 
@@ -798,25 +795,6 @@ A full Eurostat collection requires approximately **150–200 GB**:
 - Extracted data (`.tsv` + `.sdmx.xml`): ~100–120 GB
 - Structural metadata (DSD + Dataflow + Constraint): ~15–20 GB
 - Reference metadata + Info JSON: ~1–2 GB
-
----
-
-## Migration from v1
-
-If you previously used `eurostat-collect` (v1.0.0):
-
-1. **The `eurostat-collect` command still works** — it's kept as a legacy alias
-2. **Default output changed** from `./eurostat_data` to `./stats_data` — use `-o ./eurostat_data` to keep using your existing directory
-3. **State file renamed** from `.collector_state.json` to `.eurostat_state.json` — the tool auto-detects and migrates the old name on first run
-4. **Package renamed** from `eurostat_collector` to `inter_collector` — update any custom scripts:
-   ```bash
-   # Old
-   python -m eurostat_collector.cli collect
-   # New
-   python -m inter_collector.cli collect
-   ```
-5. **New CLI name**: `inter-collect` — all existing commands and flags work identically
-6. **Reinstall** after updating: `pip install -e .`
 
 ---
 
