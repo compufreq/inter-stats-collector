@@ -38,6 +38,9 @@ env/
 .AppleDouble
 .LSOverride
 
+# Wiki (has its own git repo at github.com/compufreq/inter-stats-collector.wiki)
+wiki/
+
 # Claude Code
 .claude/
 
