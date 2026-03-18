@@ -350,5 +350,38 @@ document.querySelectorAll('thead th[data-col]').forEach(function(th){
 
 init();
 </script>
+<script>
+(function(){
+  var p=location.pathname.split("/").pop()||"index.html";
+  document.querySelectorAll("nav .links a, nav .dropdown-menu a").forEach(function(a){
+    var h=(a.getAttribute("href")||"").split("/").pop().split("#")[0]||"index.html";
+    if(h===p)a.style.color="#3b82f6";
+  });
+  // Mobile overlay from nav links
+  var links=document.getElementById("nav-links"),burger=document.getElementById("burger");
+  if(!links||!burger)return;
+  var ov=document.createElement("div");ov.id="mobile-overlay";
+  ov.setAttribute("style","display:none;position:fixed;top:0;left:0;right:0;bottom:0;width:100vw;height:100vh;background:#0a0e17;z-index:9999;flex-direction:column;align-items:center;justify-content:center;gap:2rem;");
+  function isAct(href){return(href||"").split("/").pop().split("#")[0]===p}
+  Array.from(links.children).forEach(function(c){
+    if(c.classList&&c.classList.contains("dropdown")){
+      var m=c.querySelector(".dropdown-menu");if(!m)return;
+      Array.from(m.children).forEach(function(i){
+        if(i.tagName!=="A")return;var cl=i.cloneNode(true);var a=isAct(cl.getAttribute("href"));
+        cl.setAttribute("style","font-size:1.1rem;color:"+(a?"#3b82f6":"#94a3b8")+";text-decoration:none;"+(a?"font-weight:600;":""));
+        cl.addEventListener("click",function(){ov.style.display="none";burger.classList.remove("open")});ov.appendChild(cl);
+      });
+    }else if(c.tagName==="A"){
+      var cl=c.cloneNode(true);var a=isAct(cl.getAttribute("href"));
+      cl.setAttribute("style","font-size:1.3rem;color:"+(a?"#3b82f6":"#e2e8f0")+";text-decoration:none;"+(a?"font-weight:600;":""));
+      cl.addEventListener("click",function(){ov.style.display="none";burger.classList.remove("open")});ov.appendChild(cl);
+    }
+  });
+  document.body.appendChild(ov);
+  burger.addEventListener("click",function(){
+    var o=ov.style.display==="flex";ov.style.display=o?"none":"flex";burger.classList.toggle("open",!o);
+  });
+})();
+</script>
 </body>
 </html>

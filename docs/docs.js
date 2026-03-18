@@ -73,6 +73,18 @@
     });
   }
 
+  // Highlight current page in nav + dropdown
+  (function(){
+    var path=window.location.pathname.split('/').pop()||'index.html';
+    // Mark matching links in desktop nav and dropdown
+    document.querySelectorAll('nav .links a, nav .dropdown-menu a').forEach(function(a){
+      var href=(a.getAttribute('href')||'').split('/').pop().split('#')[0]||'index.html';
+      if(href===path){
+        a.style.color='#3b82f6';
+      }
+    });
+  })();
+
   // Mobile nav — fullscreen overlay menu
   (function(){
     var links=document.getElementById('nav-links');
@@ -84,6 +96,9 @@
     overlay.id='mobile-overlay';
     overlay.setAttribute('style','display:none;position:fixed;top:0;left:0;right:0;bottom:0;width:100vw;height:100vh;background:#0a0e17;z-index:9999;flex-direction:column;align-items:center;justify-content:center;gap:2rem;');
 
+    var currentPage=window.location.pathname.split('/').pop()||'index.html';
+    function isActive(href){return(href||'').split('/').pop().split('#')[0]===currentPage||((href||'')==='./'+currentPage)}
+
     Array.from(links.children).forEach(function(child){
       if(child.classList&&child.classList.contains('dropdown')){
         // Flatten dropdown: add each menu link directly
@@ -92,7 +107,8 @@
           Array.from(menu.children).forEach(function(item){
             if(item.tagName==='A'){
               var clone=item.cloneNode(true);
-              clone.setAttribute('style','font-size:1.1rem;color:#94a3b8;text-decoration:none;');
+              var active=isActive(clone.getAttribute('href'));
+              clone.setAttribute('style','font-size:1.1rem;color:'+(active?'#3b82f6':'#94a3b8')+';text-decoration:none;'+(active?'font-weight:600;':''));
               clone.addEventListener('click',function(){closeMobileMenu()});
               overlay.appendChild(clone);
             }
@@ -100,7 +116,8 @@
         }
       } else if(child.tagName==='A'){
         var clone=child.cloneNode(true);
-        clone.setAttribute('style','font-size:1.3rem;color:#e2e8f0;text-decoration:none;');
+        var active=isActive(clone.getAttribute('href'));
+        clone.setAttribute('style','font-size:1.3rem;color:'+(active?'#3b82f6':'#e2e8f0')+';text-decoration:none;'+(active?'font-weight:600;':''));
         clone.addEventListener('click',function(){closeMobileMenu()});
         overlay.appendChild(clone);
       }

@@ -772,6 +772,15 @@
 </footer>
 
 <script>
+// Highlight current page in nav
+(function(){
+  var p=location.pathname.split('/').pop()||'index.html';
+  document.querySelectorAll('nav .links a, nav .dropdown-menu a').forEach(function(a){
+    var h=(a.getAttribute('href')||'').split('/').pop().split('#')[0]||'index.html';
+    if(h===p||h==='./'&&(p===''||p==='index.html'))a.style.color='#3b82f6';
+  });
+})();
+
 // Mobile menu
 document.getElementById('burger').addEventListener('click', function() {
   this.classList.toggle('open');
