@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Swiss opendata.swiss Organizations — Inter Stats Collector</title>
+  <meta name="description" content="Browse all organizations on opendata.swiss with dataset counts and CLI scope slugs for inter-stats-collector.">
+  <link rel="canonical" href="https://compufreq.github.io/inter-stats-collector/swiss-orgs.html">
+  <style>
+    :root {
+      --bg: #0a0e17; --bg-card: #111827; --bg-row-hover: #1a2332;
+      --border: #1e293b; --text: #e2e8f0; --text-dim: #94a3b8; --text-bright: #f8fafc;
+      --accent: #22c55e; --accent-dim: rgba(34,197,94,0.15);
+      --blue: #3b82f6; --radius: 12px; --radius-sm: 8px;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif; background:var(--bg); color:var(--text); line-height:1.6; }
+    nav { position:sticky; top:0; z-index:100; padding:0.8rem 2rem; background:rgba(10,14,23,0.9); backdrop-filter:blur(16px); border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+    nav a.logo { color:var(--text-bright); text-decoration:none; font-weight:700; font-size:1rem; }
+    nav a.logo span { color:var(--accent); }
+    nav .links { display:flex; gap:1.2rem; }
+    nav .links a { color:var(--text-dim); text-decoration:none; font-size:0.85rem; }
+    nav .links a:hover { color:var(--text-bright); }
+    .header { text-align:center; padding:3rem 2rem 1.5rem; }
+    .header h1 { font-size:2rem; font-weight:800; color:var(--text-bright); margin-bottom:0.5rem; }
+    .header h1 .green { color:var(--accent); }
+    .header p { color:var(--text-dim); font-size:1rem; max-width:600px; margin:0 auto; }
+    .controls { max-width:1000px; margin:1.5rem auto; padding:0 2rem; display:flex; gap:1rem; flex-wrap:wrap; align-items:center; }
+    .search-box { flex:1; min-width:250px; background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-sm); padding:0.7rem 1rem; color:var(--text); font-size:0.9rem; outline:none; transition:border-color 0.2s; }
+    .search-box:focus { border-color:var(--accent); }
+    .search-box::placeholder { color:var(--text-dim); }
+    .stats-badge { background:var(--accent-dim); border:1px solid rgba(34,197,94,0.3); border-radius:100px; padding:0.4rem 1rem; font-size:0.8rem; color:var(--accent); white-space:nowrap; }
+    .sort-btn { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-sm); padding:0.5rem 1rem; color:var(--text-dim); font-size:0.8rem; cursor:pointer; transition:all 0.2s; }
+    .sort-btn:hover,.sort-btn.active { border-color:var(--accent); color:var(--text-bright); }
+    .table-wrap { max-width:1000px; margin:1rem auto 3rem; padding:0 2rem; }
+    table { width:100%; border-collapse:collapse; background:var(--bg-card); border-radius:var(--radius); overflow:hidden; border:1px solid var(--border); }
+    thead th { text-align:left; padding:0.8rem 1rem; font-size:0.75rem; text-transform:uppercase; letter-spacing:0.05em; color:var(--text-dim); border-bottom:1px solid var(--border); cursor:pointer; user-select:none; }
+    thead th:hover { color:var(--text-bright); }
+    tbody tr { border-bottom:1px solid rgba(30,41,59,0.5); transition:background 0.15s; }
+    tbody tr:hover { background:var(--bg-row-hover); }
+    tbody td { padding:0.6rem 1rem; font-size:0.85rem; }
+    .slug { font-family:'SF Mono','Fira Code',monospace; font-size:0.8rem; color:var(--accent); background:var(--accent-dim); padding:0.15rem 0.5rem; border-radius:4px; display:inline-block; cursor:pointer; transition:background 0.2s; }
+    .slug:hover { background:rgba(34,197,94,0.25); }
+    .slug.copied { color:var(--text-bright); background:rgba(34,197,94,0.4); }
+    .ds-count { font-weight:600; color:var(--text-bright); text-align:right; display:block; }
+    .ds-bar { height:3px; background:var(--accent); border-radius:2px; margin-top:2px; }
+    .loading { text-align:center; padding:4rem 2rem; color:var(--text-dim); }
+    .spinner { display:inline-block; width:30px; height:30px; border:3px solid var(--border); border-top-color:var(--accent); border-radius:50%; animation:spin 0.8s linear infinite; margin-bottom:1rem; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+    .error { text-align:center; padding:3rem; color:#ef4444; }
+    .toast { position:fixed; bottom:2rem; left:50%; transform:translateX(-50%); background:var(--accent); color:#000; padding:0.5rem 1.2rem; border-radius:100px; font-size:0.85rem; font-weight:600; opacity:0; transition:opacity 0.3s; pointer-events:none; z-index:200; }
+    .toast.show { opacity:1; }
+    .cli-hint { max-width:1000px; margin:0 auto 2rem; padding:0 2rem; }
+    .cli-box { background:#0d1117; border:1px solid var(--border); border-radius:var(--radius); padding:1rem 1.2rem; font-family:'SF Mono',monospace; font-size:0.85rem; color:var(--text-dim); overflow-x:auto; }
+    .cli-box .cmd { color:var(--text-bright); }
+    .cli-box .flag { color:#06b6d4; }
+    .cli-box .val { color:var(--accent); }
+    footer { text-align:center; padding:2rem; border-top:1px solid var(--border); color:var(--text-dim); font-size:0.8rem; }
+    footer a { color:var(--blue); text-decoration:none; }
+    @media (max-width:768px) { .controls { flex-direction:column; } .search-box { min-width:100%; } table { font-size:0.8rem; } tbody td,thead th { padding:0.5rem 0.6rem; } }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="./" class="logo"><span>&gt;_</span> inter-stats-collector</a>
+  <div class="links">
+    <a href="./">Home</a>
+    <a href="./swiss-orgs.html" style="color:var(--text-bright)">Swiss Orgs</a>
+    <a href="./hdx-orgs.html">HDX Orgs</a>
+    <a href="https://github.com/compufreq/inter-stats-collector/wiki">Wiki</a>
+    <a href="https://github.com/compufreq/inter-stats-collector">GitHub</a>
+  </div>
+</nav>
+
+<div class="header">
+  <h1><span class="green">opendata.swiss</span> Organizations</h1>
+  <p>Browse all organizations on Switzerland's official open data portal. Click any slug to copy the <code>--scope</code> value.</p>
+</div>
+
+<div class="cli-hint">
+  <div class="cli-box">
+    <span class="cmd">inter-collect</span> <span class="flag">--stats</span> <span class="cmd">switzerland</span> <span class="flag">--scope</span> <span class="val" id="cli-slug">bundesamt-fur-statistik-bfs</span> <span class="cmd">collect</span>
+  </div>
+</div>
+
+<div class="controls">
+  <input type="text" class="search-box" id="search" placeholder="Search organizations..." autocomplete="off">
+  <span class="stats-badge" id="stats-badge">Loading...</span>
+  <button class="sort-btn active" data-sort="count" id="sort-count">By datasets &#8595;</button>
+  <button class="sort-btn" data-sort="name" id="sort-name">A-Z</button>
+</div>
+
+<div class="table-wrap">
+  <div class="loading" id="loading"><div class="spinner"></div><div>Fetching organizations from opendata.swiss...</div></div>
+  <div class="error" id="error" style="display:none"></div>
+  <table id="table" style="display:none">
+    <thead><tr>
+      <th style="width:50px">#</th>
+      <th>Organization</th>
+      <th style="width:300px">Scope Value (slug)</th>
+      <th style="width:120px;text-align:right">Datasets</th>
+    </tr></thead>
+    <tbody id="tbody"></tbody>
+  </table>
+</div>
+
+<div class="toast" id="toast">Copied!</div>
+
+<footer>
+  <a href="./">Inter Stats Collector</a> &middot; <a href="https://github.com/compufreq/inter-stats-collector">GitHub</a> &middot; Data from <a href="https://opendata.swiss">opendata.swiss</a>
+</footer>
+
+<script>
+const API = 'https://ckan.opendata.swiss/api/3/action/organization_list?all_fields=true&limit=500';
+let allOrgs = [];
+let currentSort = 'count';
+
+async function fetchOrgs() {
+  try {
+    const resp = await fetch(API);
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    const data = await resp.json();
+    if (!data.success) throw new Error('API returned success=false');
+    allOrgs = data.result
+      .filter(function(o) { return (o.package_count || 0) > 0; })
+      .map(function(o) {
+        var title = o.title || o.display_name || o.name;
+        if (typeof title === 'object') title = title.en || title.de || title.fr || Object.values(title)[0] || o.name;
+        return { name: o.name, title: String(title), count: o.package_count || 0 };
+      });
+    allOrgs.sort(function(a, b) { return b.count - a.count; });
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('table').style.display = '';
+    render();
+  } catch (e) {
+    document.getElementById('loading').style.display = 'none';
+    var errEl = document.getElementById('error');
+    errEl.style.display = '';
+    errEl.textContent = 'Failed to load: ' + e.message + '. Try refreshing.';
+  }
+}
+
+function escapeText(s) {
+  var div = document.createElement('div');
+  div.appendChild(document.createTextNode(s));
+  return div.textContent;
+}
+
+function render() {
+  var query = document.getElementById('search').value.toLowerCase();
+  var filtered = allOrgs.filter(function(o) {
+    return o.name.toLowerCase().indexOf(query) !== -1 || o.title.toLowerCase().indexOf(query) !== -1;
+  });
+  if (currentSort === 'name') filtered.sort(function(a, b) { return a.title.localeCompare(b.title); });
+  else filtered.sort(function(a, b) { return b.count - a.count; });
+
+  var maxCount = filtered.length ? filtered[0].count : 1;
+  var totalDatasets = filtered.reduce(function(s, o) { return s + o.count; }, 0);
+  document.getElementById('stats-badge').textContent = filtered.length + ' organizations \u00b7 ' + totalDatasets.toLocaleString() + ' datasets';
+
+  var tbody = document.getElementById('tbody');
+  // Clear existing rows safely
+  while (tbody.firstChild) tbody.removeChild(tbody.firstChild);
+
+  filtered.forEach(function(o, i) {
+    var tr = document.createElement('tr');
+
+    var tdNum = document.createElement('td');
+    tdNum.style.color = 'var(--text-dim)';
+    tdNum.textContent = String(i + 1);
+    tr.appendChild(tdNum);
+
+    var tdTitle = document.createElement('td');
+    tdTitle.className = 'title-cell';
+    var titleSpan = document.createElement('span');
+    titleSpan.className = 'title';
+    titleSpan.style.color = 'var(--text-bright)';
+    titleSpan.style.fontWeight = '500';
+    titleSpan.textContent = o.title;
+    tdTitle.appendChild(titleSpan);
+    tr.appendChild(tdTitle);
+
+    var tdSlug = document.createElement('td');
+    var slugSpan = document.createElement('span');
+    slugSpan.className = 'slug';
+    slugSpan.textContent = o.name;
+    slugSpan.title = 'Click to copy';
+    slugSpan.addEventListener('click', function() { copySlug(slugSpan, o.name); });
+    tdSlug.appendChild(slugSpan);
+    tr.appendChild(tdSlug);
+
+    var tdCount = document.createElement('td');
+    var countSpan = document.createElement('span');
+    countSpan.className = 'ds-count';
+    countSpan.textContent = o.count.toLocaleString();
+    tdCount.appendChild(countSpan);
+    var barDiv = document.createElement('div');
+    barDiv.className = 'ds-bar';
+    barDiv.style.width = Math.max(2, (o.count / maxCount) * 100) + '%';
+    tdCount.appendChild(barDiv);
+    tr.appendChild(tdCount);
+
+    tbody.appendChild(tr);
+  });
+}
+
+function copySlug(el, slug) {
+  navigator.clipboard.writeText(slug);
+  el.classList.add('copied');
+  document.getElementById('cli-slug').textContent = slug;
+  var toast = document.getElementById('toast');
+  toast.textContent = 'Copied: --scope ' + slug;
+  toast.classList.add('show');
+  setTimeout(function() { el.classList.remove('copied'); toast.classList.remove('show'); }, 1500);
+}
+
+document.getElementById('search').addEventListener('input', render);
+document.getElementById('sort-count').addEventListener('click', function() {
+  currentSort = 'count';
+  document.getElementById('sort-count').classList.add('active');
+  document.getElementById('sort-name').classList.remove('active');
+  render();
+});
+document.getElementById('sort-name').addEventListener('click', function() {
+  currentSort = 'name';
+  document.getElementById('sort-name').classList.add('active');
+  document.getElementById('sort-count').classList.remove('active');
+  render();
+});
+
+fetchOrgs();
+</script>
+</body>
+</html>
