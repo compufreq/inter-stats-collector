@@ -470,9 +470,31 @@
       transform: translateY(0);
     }
 
+    /* Burger menu */
+    .burger { display: none; background: none; border: none; cursor: pointer; padding: 0.4rem; z-index: 101; }
+    .burger svg { width: 24px; height: 24px; stroke: var(--text); stroke-width: 2; fill: none; }
+    .burger .close-icon { display: none; }
+    .burger.open .burger-icon { display: none; }
+    .burger.open .close-icon { display: block; }
+
     /* Responsive */
     @media (max-width: 768px) {
-      nav .links { display: none; }
+      .burger { display: block; }
+      nav .links {
+        display: none;
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(10, 14, 23, 0.97);
+        backdrop-filter: blur(20px);
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1.8rem;
+        z-index: 100;
+      }
+      nav .links.open { display: flex; }
+      nav .links a { font-size: 1.2rem; }
+      nav .links .gh-btn { font-size: 1rem; padding: 0.7rem 1.5rem; }
       .hero { padding: 7rem 1.5rem 3rem; }
       .stats-bar { gap: 1.5rem; }
       .stat .number { font-size: 2rem; }
@@ -489,10 +511,14 @@
   <a href="#" class="logo">
     <span>&gt;_</span> inter-stats-collector
   </a>
-  <div class="links">
-    <a href="#sources">Sources</a>
-    <a href="#features">Features</a>
-    <a href="#install">Install</a>
+  <button class="burger" id="burger" aria-label="Toggle menu" onclick="this.classList.toggle('open');document.getElementById('nav-links').classList.toggle('open')">
+    <svg class="burger-icon" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    <svg class="close-icon" viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg>
+  </button>
+  <div class="links" id="nav-links">
+    <a href="#sources" onclick="closeMobileMenu()">Sources</a>
+    <a href="#features" onclick="closeMobileMenu()">Features</a>
+    <a href="#install" onclick="closeMobileMenu()">Install</a>
     <a href="./swiss-orgs.html">Swiss Orgs</a>
     <a href="./hdx-orgs.html">HDX Orgs</a>
     <a href="https://github.com/compufreq/inter-stats-collector/wiki" target="_blank">Docs</a>
@@ -719,6 +745,12 @@
 </footer>
 
 <script>
+// Mobile menu close helper
+function closeMobileMenu() {
+  document.getElementById('burger').classList.remove('open');
+  document.getElementById('nav-links').classList.remove('open');
+}
+
 // Scroll animations
 const observer = new IntersectionObserver((entries) => {
   entries.forEach(e => {

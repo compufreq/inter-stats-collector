@@ -47,13 +47,18 @@
     .toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);background:var(--accent);color:#000;padding:.5rem 1.2rem;border-radius:100px;font-size:.85rem;font-weight:600;opacity:0;transition:opacity .3s;pointer-events:none;z-index:200}.toast.show{opacity:1}
     .empty-state{text-align:center;padding:3rem;color:var(--text-dim);font-size:.9rem}
     footer{text-align:center;padding:2rem;border-top:1px solid var(--border);color:var(--text-dim);font-size:.8rem}footer a{color:var(--blue);text-decoration:none}
-    @media(max-width:768px){.controls,.filters{flex-direction:column}.search-box{min-width:100%}.detail-grid{grid-template-columns:1fr}table{font-size:.78rem}tbody td,thead th{padding:.4rem .5rem}.pagination{flex-direction:column;align-items:flex-start}}
+    .burger{display:none;background:none;border:none;cursor:pointer;padding:.4rem;z-index:101}.burger svg{width:24px;height:24px;stroke:var(--text);stroke-width:2;fill:none}.burger .close-icon{display:none}.burger.open .burger-icon{display:none}.burger.open .close-icon{display:block}
+    @media(max-width:768px){.burger{display:block}nav .links{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(10,14,23,.97);backdrop-filter:blur(20px);flex-direction:column;align-items:center;justify-content:center;gap:1.8rem;z-index:100}nav .links.open{display:flex}nav .links a{font-size:1.2rem}.controls,.filters{flex-direction:column}.search-box{min-width:100%}.detail-grid{grid-template-columns:1fr}table{font-size:.78rem}tbody td,thead th{padding:.4rem .5rem}.pagination{flex-direction:column;align-items:flex-start}}
   </style>
 </head>
 <body>
 
 <nav>
   <a href="./" class="logo"><span>&gt;_</span> inter-stats-collector</a>
+  <button class="burger" onclick="this.classList.toggle('open');this.nextElementSibling.classList.toggle('open')" aria-label="Toggle menu">
+    <svg class="burger-icon" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    <svg class="close-icon" viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg>
+  </button>
   <div class="links"><a href="./">Home</a><a href="./swiss-orgs.html" style="color:var(--text-bright)">Swiss Orgs</a><a href="./hdx-orgs.html">HDX Orgs</a><a href="https://github.com/compufreq/inter-stats-collector/wiki">Wiki</a><a href="https://github.com/compufreq/inter-stats-collector">GitHub</a></div>
 </nav>
 
