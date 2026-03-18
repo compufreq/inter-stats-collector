@@ -8,6 +8,12 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;background
 nav a.logo{color:var(--text-bright);text-decoration:none;font-weight:700;font-size:1.1rem;display:flex;align-items:center;gap:.5rem}nav a.logo span{color:var(--accent)}
 nav .links{display:flex;gap:1.5rem;align-items:center}nav .links a{color:var(--text-dim);text-decoration:none;font-size:.9rem;transition:color .2s}nav .links a:hover{color:var(--text-bright)}nav .links a.active{color:var(--accent)}
 .gh-btn{display:inline-flex;align-items:center;gap:.4rem;padding:.5rem 1rem;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--rs);color:var(--text)!important;font-size:.85rem;transition:all .2s}.gh-btn:hover{background:rgba(26,35,50,1);border-color:var(--accent)}.gh-btn svg{width:18px;height:18px;fill:currentColor}
+/* Dropdown */
+.dropdown{position:relative}.dropdown-toggle{cursor:pointer;color:var(--text-dim);font-size:.9rem;text-decoration:none;transition:color .2s;background:none;border:none;font-family:inherit;display:flex;align-items:center;gap:.3rem;padding:0}.dropdown-toggle:hover{color:var(--text-bright)}.dropdown-toggle .caret{font-size:.6rem;transition:transform .2s}
+.dropdown-menu{display:none;position:absolute;top:calc(100% + .5rem);left:50%;transform:translateX(-50%);background:var(--bg-card);border:1px solid var(--border);border-radius:var(--rs);padding:.4rem 0;min-width:200px;box-shadow:0 8px 32px rgba(0,0,0,.4);z-index:200}
+.dropdown:hover .dropdown-menu{display:block}.dropdown:hover .dropdown-toggle .caret{transform:rotate(180deg)}
+.dropdown-menu a{display:block;padding:.4rem 1rem;color:var(--text-dim);text-decoration:none;font-size:.85rem;transition:all .15s;white-space:nowrap}.dropdown-menu a:hover{color:var(--text-bright);background:rgba(255,255,255,.03)}
+.dropdown-menu .dd-sep{height:1px;background:var(--border);margin:.3rem .8rem}
 .burger{display:none;background:none;border:none;cursor:pointer;padding:.4rem}.burger svg{width:24px;height:24px;stroke:var(--text);stroke-width:2;fill:none}.burger .close-icon{display:none}.burger.open .burger-icon{display:none}.burger.open .close-icon{display:block}
 
 /* Layout */
@@ -66,6 +72,10 @@ footer{text-align:center;padding:2rem;border-top:1px solid var(--border);color:v
   .mobile-overlay a:hover{color:var(--text-bright)}
   .mobile-overlay .gh-btn{font-size:1.1rem;padding:.8rem 1.8rem}
   nav .links{display:none}
+  .dropdown-menu{position:static;transform:none;display:block;background:none;border:none;box-shadow:none;padding:0;min-width:0}
+  .dropdown-menu a{padding:.2rem 0;font-size:1.1rem;text-align:center}
+  .dropdown-toggle{display:none}
+  .dropdown-menu .dd-sep{display:none}
   .sidebar{display:none;width:280px;z-index:150}
   .sidebar.open{display:block}
   .doc-content{margin-left:0;padding:1.5rem 1.2rem 3rem}
