@@ -262,6 +262,14 @@
       if(ghBtn)navLinks.insertBefore(btn,ghBtn);
       else navLinks.appendChild(btn);
     }
+    // Mobile search FAB
+    var fabSvg=document.createElementNS(svgNS,'svg');
+    fabSvg.setAttribute('viewBox','0 0 24 24');
+    var fabC=document.createElementNS(svgNS,'circle');fabC.setAttribute('cx','11');fabC.setAttribute('cy','11');fabC.setAttribute('r','8');
+    var fabL=document.createElementNS(svgNS,'line');fabL.setAttribute('x1','21');fabL.setAttribute('y1','21');fabL.setAttribute('x2','16.65');fabL.setAttribute('y2','16.65');
+    fabSvg.appendChild(fabC);fabSvg.appendChild(fabL);
+    var fab=el('button',{'class':'search-fab','aria-label':'Search',onclick:openSearch},[fabSvg]);
+    document.body.appendChild(fab);
   })();
 
   // Highlight current page in nav + dropdown
