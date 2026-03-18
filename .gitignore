@@ -1,0 +1,47 @@
+# Downloaded data (can be hundreds of GB)
+stats_data/
+eurostat_data/
+
+# State and cache files (user-specific)
+.eurostat_state.json
+.swiss_state.json
+.ons_state.json
+.unhcr_state.json
+.hdx_state.json
+.swiss_deprecated_dbs.json
+*_tree_index.json
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+*.egg
+dist/
+build/
+*.whl
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Claude Code
+.claude/
+
+# OS
+Thumbs.db
+ehthumbs.db
+Desktop.ini
