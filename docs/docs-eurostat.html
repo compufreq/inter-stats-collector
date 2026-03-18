@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eurostat Documentation — Inter Stats Collector</title>
+  <meta name="description" content="Eurostat (EU) source documentation for inter-collect: ~10,400 datasets via the SDMX 2.1 Dissemination API.">
+  <link rel="canonical" href="https://compufreq.github.io/inter-stats-collector/docs-eurostat.html">
+  <link rel="stylesheet" href="docs.css">
+</head>
+<body>
+
+<nav>
+  <a href="./" class="logo"><span>&gt;_</span> inter-stats-collector</a>
+  <button class="burger" id="burger" aria-label="Menu" onclick="this.classList.toggle('open');document.getElementById('nav-links').classList.toggle('open')">
+    <svg class="burger-icon" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    <svg class="close-icon" viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg>
+  </button>
+  <div class="links" id="nav-links">
+    <a href="./" onclick="closeMobileMenu()">Home</a>
+    <a href="docs-cli.html" onclick="closeMobileMenu()">CLI Docs</a>
+    <a href="docs-eurostat.html" class="active" onclick="closeMobileMenu()">Eurostat</a>
+    <a href="docs-ons.html" onclick="closeMobileMenu()">UK ONS</a>
+    <a href="docs-swiss.html" onclick="closeMobileMenu()">Swiss</a>
+    <a href="docs-unhcr.html" onclick="closeMobileMenu()">UNHCR</a>
+    <a href="docs-hdx.html" onclick="closeMobileMenu()">HDX</a>
+    <a href="swiss-orgs.html" onclick="closeMobileMenu()">Swiss Orgs</a>
+    <a href="hdx-orgs.html" onclick="closeMobileMenu()">HDX Orgs</a>
+    <a href="https://github.com/compufreq/inter-stats-collector">GitHub</a>
+  </div>
+</nav>
+
+<div class="doc-layout">
+  <aside class="sidebar">
+    <div class="group">Sources</div>
+    <a href="docs-eurostat.html" class="active">Eurostat</a>
+    <a href="docs-ons.html">UK ONS</a>
+    <a href="docs-swiss.html">Swiss FSO</a>
+    <a href="docs-unhcr.html">UNHCR</a>
+    <a href="docs-hdx.html">HDX</a>
+    <div class="sep"></div>
+    <div class="group">Org Browsers</div>
+    <a href="swiss-orgs.html">Swiss Organizations</a>
+    <a href="hdx-orgs.html">HDX Organizations</a>
+    <div class="sep"></div>
+    <div class="group">This Page</div>
+    <a href="#api-endpoints">API Endpoints</a>
+    <a href="#commands-usage">Commands &amp; Usage</a>
+    <a href="#flag-compatibility">Flag Compatibility</a>
+    <a href="#quick-reference-all-flags">Quick Reference</a>
+    <a href="#download-datasets">Download Datasets</a>
+    <a href="#extract-compressed-files">Extract Files</a>
+    <a href="#check-collection-status">Check Status</a>
+    <a href="#view-category-tree">View Tree</a>
+    <a href="#rename-folders">Rename Folders</a>
+    <a href="#files-per-dataset">Files Per Dataset</a>
+    <a href="#output-structure">Output Structure</a>
+    <a href="#disk-space">Disk Space</a>
+    <a href="#license">License</a>
+  </aside>
+
+  <main class="doc-content">
+    <h1>Eurostat (EU)</h1>
+    <p class="subtitle">CLI flag: <code>--stats europe</code> &middot; ~10,400 datasets &middot; <a href="https://wikis.ec.europa.eu/display/EUROSTATHELP/API+SDMX+2.1+-+data+query">SDMX 2.1 Dissemination API</a> &middot; No authentication required</p>
+
+    <h2 id="api-endpoints">API Endpoints</h2>
+    <p>Base URL: <code>https://ec.europa.eu/eurostat/api/dissemination</code></p>
+    <table>
+      <tr><th>Endpoint</th><th>URL</th><th>Purpose</th></tr>
+      <tr><td>Catalogue</td><td><code>/catalogue/toc/xml</code></td><td>Full Table of Contents (XML)</td></tr>
+      <tr><td>SDMX Data</td><td><code>/sdmx/2.1/data/{code}</code></td><td>Statistical data (TSV + SDMX XML)</td></tr>
+      <tr><td>Datastructure</td><td><code>/sdmx/2.1/datastructure/ESTAT/{code}/latest</code></td><td>Data Structure Definition</td></tr>
+      <tr><td>Dataflow</td><td><code>/sdmx/2.1/dataflow/ESTAT/{code}/1.0</code></td><td>Dataflow with resolved codelists</td></tr>
+      <tr><td>Content Constraint</td><td><code>/sdmx/2.1/contentconstraint/ESTAT/{code}/latest</code></td><td>Valid dimension values</td></tr>
+      <tr><td>ESMS Metadata</td><td><code>ec.europa.eu/eurostat/cache/metadata/en/{ref}_esms.htm</code></td><td>Methodology, quality reports</td></tr>
+    </table>
+
+    <h2 id="commands-usage">Commands &amp; Usage</h2>
+
+    <h3 id="flag-compatibility">Flag Compatibility</h3>
+    <table>
+      <tr><th>Flag</th><th>Supported</th><th>Notes</th></tr>
+      <tr><td><code>--scope</code></td><td><span class="badge badge-no">&#10007;</span></td><td>Not applicable — Eurostat has a single source</td></tr>
+      <tr><td><code>--formats</code></td><td><span class="badge badge-no">&#10007;</span></td><td>Not applicable — always downloads TSV + SDMX + structural metadata</td></tr>
+      <tr><td><code>--year-from</code> / <code>--year-to</code></td><td><span class="badge badge-no">&#10007;</span></td><td>Not applicable — each dataset contains all available years</td></tr>
+      <tr><td><code>--concurrency</code></td><td><span class="badge badge-yes">&#10003;</span></td><td>Default 5; safe to increase for Eurostat</td></tr>
+      <tr><td><code>--verify</code></td><td><span class="badge badge-yes">&#10003;</span></td><td>Checks that TSV or SDMX data files exist on disk</td></tr>
+      <tr><td><code>--dry-run</code></td><td><span class="badge badge-yes">&#10003;</span></td><td>Preview without downloading</td></tr>
+      <tr><td><code>--retry-failed</code></td><td><span class="badge badge-yes">&#10003;</span></td><td>Retry datasets that failed in a previous run</td></tr>
+      <tr><td><code>--filter-path</code></td><td><span class="badge badge-yes">&#10003;</span></td><td>Filter by catalog path (e.g., <code>database_by_themes/economy</code>)</td></tr>
+      <tr><td><code>--filter-codes</code></td><td><span class="badge badge-yes">&#10003;</span></td><td>Filter by dataset codes (e.g., <code>prc_hicp_midx,ei_bsin_q_r2</code>)</td></tr>
+      <tr><td><code>--folder-style</code></td><td><span class="badge badge-yes">&#10003;</span></td><td><code>display</code> (human-readable) or <code>code</code> (raw codes)</td></tr>
+    </table>
+
+    <h3 id="quick-reference-all-flags">Quick Reference (All Flags)</h3>
+    <pre><code># collect — all applicable flags for Eurostat
+inter-collect --stats europe collect \
+  -o &lt;OUTPUT_DIR&gt; \
+  -c &lt;CONCURRENCY:int&gt; \
+  -d &lt;DELAY:seconds&gt; \
+  --skip-existing | --no-skip-existing \
+  --retry-failed \
+  --filter-path &lt;CATALOG_PATH:str&gt; \
+  --filter-codes &lt;CODE1,CODE2,...&gt; \
+  --dry-run \
+  --verify \
+  --folder-style &lt;display|code&gt; \
+  -v
+
+# extract — decompress .tsv.gz and .sdmx.xml.gz files
+inter-collect --stats europe extract \
+  -o &lt;OUTPUT_DIR&gt; \
+  -c &lt;WORKERS:int&gt; \
+  -b &lt;BUFFER_MB:int&gt; \
+  --force \
+  -v
+
+# status — show collection progress
+inter-collect --stats europe status -o &lt;OUTPUT_DIR&gt;
+
+# tree — display category hierarchy
+inter-collect --stats europe tree --depth &lt;DEPTH:int&gt; -v
+
+# rename — switch folder naming style
+inter-collect --stats europe rename &lt;display|code&gt; -o &lt;OUTPUT_DIR&gt; --dry-run -v</code></pre>
+    <p><strong>Not applicable for Eurostat:</strong> <code>--scope</code>, <code>--formats</code>, <code>--year-from</code>, <code>--year-to</code> (silently ignored)</p>
+
+    <h3 id="download-datasets">Download Datasets</h3>
+    <pre><code># Download all ~10,400 datasets (default)
+inter-collect --stats europe collect
+
+# Preview what would be downloaded
+inter-collect --stats europe collect --dry-run
+
+# Download with higher concurrency
+inter-collect --stats europe collect --concurrency 10
+
+# Download specific datasets only
+inter-collect --stats europe collect --filter-codes prc_hicp_midx,nama_10_gdp
+
+# Download only datasets under a category path
+inter-collect --stats europe collect --filter-path database_by_themes/economy
+
+# Retry previously failed datasets
+inter-collect --stats europe collect --retry-failed
+
+# Verify completed datasets have actual data files, re-download if missing
+inter-collect --stats europe collect --verify</code></pre>
+
+    <h3 id="extract-compressed-files">Extract Compressed Files</h3>
+    <p>Eurostat delivers data as <code>.tsv.gz</code> and <code>.sdmx.xml.gz</code>. After collection, extract them:</p>
+    <pre><code># Extract all .gz files (auto-detects CPU cores for parallelism)
+inter-collect --stats europe extract
+
+# Extract with specific worker count and buffer size
+inter-collect --stats europe extract --concurrency 8 --buffer 128
+
+# Re-extract already extracted files
+inter-collect --stats europe extract --force</code></pre>
+
+    <h3 id="check-collection-status">Check Collection Status</h3>
+    <pre><code>inter-collect --stats europe status</code></pre>
+
+    <h3 id="view-category-tree">View Category Tree</h3>
+    <pre><code># Show category tree (default depth 3)
+inter-collect --stats europe tree
+
+# Show deeper nesting
+inter-collect --stats europe tree --depth 5</code></pre>
+
+    <h3 id="rename-folders">Rename Folders</h3>
+    <pre><code># Switch from display names to raw codes
+inter-collect --stats europe rename code --dry-run
+inter-collect --stats europe rename code
+
+# Switch back to display names
+inter-collect --stats europe rename display</code></pre>
+
+    <h2 id="files-per-dataset">Files Per Dataset</h2>
+    <p>For a dataset with code <code>prc_hicp_midx</code>, up to <strong>9 files</strong> are created:</p>
+    <table>
+      <tr><th>File</th><th>Format</th><th>Description</th></tr>
+      <tr><td><code>prc_hicp_midx.tsv.gz</code></td><td>Gzip</td><td>Raw TSV data (compressed)</td></tr>
+      <tr><td><code>prc_hicp_midx.tsv</code></td><td>TSV</td><td>Extracted tab-separated data</td></tr>
+      <tr><td><code>prc_hicp_midx.sdmx.xml.gz</code></td><td>Gzip</td><td>SDMX 2.1 XML data (compressed)</td></tr>
+      <tr><td><code>prc_hicp_midx.sdmx.xml</code></td><td>XML</td><td>Extracted SDMX observations</td></tr>
+      <tr><td><code>prc_hicp_midx_dsd.xml</code></td><td>XML</td><td>Data Structure Definition</td></tr>
+      <tr><td><code>prc_hicp_midx_dataflow.xml</code></td><td>XML</td><td>Dataflow with resolved references</td></tr>
+      <tr><td><code>prc_hicp_midx_metadata.html</code></td><td>HTML</td><td>ESMS reference metadata</td></tr>
+      <tr><td><code>prc_hicp_midx_constraint.xml</code></td><td>XML</td><td>Content constraint</td></tr>
+      <tr><td><code>prc_hicp_midx_info.json</code></td><td>JSON</td><td>TOC entry snapshot</td></tr>
+    </table>
+
+    <h2 id="output-structure">Output Structure</h2>
+    <pre>stats_data/eurostat/
+  eurostat_tree_index.json
+  .eurostat_state.json
+  eurostat/
+    database_by_themes/
+      general_and_regional_statistics/
+        european_and_national_indicators/
+          balance_of_payments/
+            ei_bpm6ca_q/
+              ei_bpm6ca_q.tsv.gz
+              ei_bpm6ca_q.tsv
+              ei_bpm6ca_q.sdmx.xml.gz
+              ...</pre>
+
+    <h2 id="disk-space">Disk Space</h2>
+    <p>A full Eurostat collection requires approximately <strong>150-200 GB</strong>:</p>
+    <table>
+      <tr><th>Component</th><th>Size</th></tr>
+      <tr><td>Compressed data (<code>.tsv.gz</code> + <code>.sdmx.xml.gz</code>)</td><td>~30-40 GB</td></tr>
+      <tr><td>Extracted data (<code>.tsv</code> + <code>.sdmx.xml</code>)</td><td>~100-120 GB</td></tr>
+      <tr><td>Structural metadata (DSD + Dataflow + Constraint)</td><td>~15-20 GB</td></tr>
+      <tr><td>Reference metadata + Info JSON</td><td>~1-2 GB</td></tr>
+    </table>
+
+    <h2 id="license">License</h2>
+    <p><a href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International (CC BY 4.0)</a></p>
+    <table>
+      <tr><th>Term</th><th>Details</th></tr>
+      <tr><td>Commercial use</td><td>Allowed</td></tr>
+      <tr><td>Attribution</td><td>Required — acknowledge Eurostat as the source</td></tr>
+      <tr><td>Legal basis</td><td>Commission Decision 2011/833/EU</td></tr>
+      <tr><td>Full terms</td><td><a href="https://ec.europa.eu/eurostat/help/copyright-notice">ec.europa.eu/eurostat/help/copyright-notice</a></td></tr>
+    </table>
+  </main>
+</div>
+
+<footer>
+  <a href="./">Inter Stats Collector</a> &middot; <a href="https://github.com/compufreq/inter-stats-collector">GitHub</a> &middot; <a href="https://github.com/compufreq/inter-stats-collector/wiki">Wiki</a>
+</footer>
+
+<button class="sidebar-toggle" aria-label="Toggle sidebar">&#9776;</button>
+<script src="docs.js"></script>
+</body>
+</html>

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CLI Documentation — Inter Stats Collector</title>
+  <meta name="description" content="Complete CLI reference for inter-collect: all commands, flags, and source-specific options.">
+  <link rel="canonical" href="https://compufreq.github.io/inter-stats-collector/docs-cli.html">
+  <link rel="stylesheet" href="docs.css">
+</head>
+<body>
+
+<nav>
+  <a href="./" class="logo"><span>&gt;_</span> inter-stats-collector</a>
+  <button class="burger" id="burger" aria-label="Menu" onclick="this.classList.toggle('open');document.getElementById('nav-links').classList.toggle('open')">
+    <svg class="burger-icon" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    <svg class="close-icon" viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg>
+  </button>
+  <div class="links" id="nav-links">
+    <a href="./" onclick="closeMobileMenu()">Home</a>
+    <a href="docs-cli.html" class="active" onclick="closeMobileMenu()">CLI Docs</a>
+    <a href="docs-eurostat.html" onclick="closeMobileMenu()">Eurostat</a>
+    <a href="docs-ons.html" onclick="closeMobileMenu()">UK ONS</a>
+    <a href="docs-swiss.html" onclick="closeMobileMenu()">Swiss</a>
+    <a href="docs-unhcr.html" onclick="closeMobileMenu()">UNHCR</a>
+    <a href="docs-hdx.html" onclick="closeMobileMenu()">HDX</a>
+    <a href="swiss-orgs.html" onclick="closeMobileMenu()">Swiss Orgs</a>
+    <a href="hdx-orgs.html" onclick="closeMobileMenu()">HDX Orgs</a>
+    <a href="https://github.com/compufreq/inter-stats-collector">GitHub</a>
+  </div>
+</nav>
+
+<div class="doc-layout">
+  <aside class="sidebar">
+    <div class="group">Sources</div>
+    <a href="docs-eurostat.html">Eurostat</a>
+    <a href="docs-ons.html">UK ONS</a>
+    <a href="docs-swiss.html">Swiss FSO</a>
+    <a href="docs-unhcr.html">UNHCR</a>
+    <a href="docs-hdx.html">HDX</a>
+    <div class="sep"></div>
+    <div class="group">Org Browsers</div>
+    <a href="swiss-orgs.html">Swiss Organizations</a>
+    <a href="hdx-orgs.html">HDX Organizations</a>
+    <div class="sep"></div>
+    <div class="group">This Page</div>
+    <a href="#commands">Commands</a>
+    <a href="#global-flags">Global Flags</a>
+    <a href="#source-flags">Source-Specific Flags</a>
+    <a href="#collect">collect</a>
+    <a href="#extract">extract</a>
+    <a href="#status">status</a>
+    <a href="#tree">tree</a>
+    <a href="#rename">rename</a>
+    <a href="#flag-matrix">Flag Compatibility Matrix</a>
+    <a href="#examples">Common Patterns</a>
+  </aside>
+
+  <main class="doc-content">
+    <h1>CLI Documentation</h1>
+    <p class="subtitle">Complete reference for the <code>inter-collect</code> command-line tool.</p>
+
+    <h2 id="commands">Commands</h2>
+    <table>
+      <tr><th>Command</th><th>Description</th></tr>
+      <tr><td><code>collect</code></td><td>Download datasets from selected source(s)</td></tr>
+      <tr><td><code>extract</code></td><td>Decompress <code>.gz</code> files in parallel</td></tr>
+      <tr><td><code>status</code></td><td>Show collection progress and disk statistics</td></tr>
+      <tr><td><code>tree</code></td><td>Display the category/taxonomy tree</td></tr>
+      <tr><td><code>rename</code></td><td>Switch folder naming between display and code styles</td></tr>
+    </table>
+
+    <h2 id="global-flags">Global Flags</h2>
+    <p>These flags are placed <strong>before</strong> the command name and apply to all sources.</p>
+    <table>
+      <tr><th>Flag</th><th>Default</th><th>Description</th></tr>
+      <tr><td><code>--stats</code></td><td><code>all</code></td><td>Source: <code>all</code>, <code>europe</code>, <code>uk</code>, <code>switzerland</code>, <code>unhcr</code>, <code>hdx</code></td></tr>
+      <tr><td><code>-o, --output</code></td><td><code>./stats_data</code></td><td>Root output directory</td></tr>
+      <tr><td><code>-v, --verbose</code></td><td>off</td><td>Enable debug logging</td></tr>
+    </table>
+
+    <h2 id="source-flags">Source-Specific Flags</h2>
+    <p>These flags are also placed <strong>before</strong> the command but only affect certain sources. They are silently ignored by other sources.</p>
+    <table>
+      <tr><th>Flag</th><th>Sources</th><th>Description</th></tr>
+      <tr><td><code>--scope &lt;ORG&gt;</code></td><td>Swiss, HDX</td><td>Organization filter: slug or <code>all</code></td></tr>
+      <tr><td><code>--formats &lt;FMT,...&gt;</code></td><td>Swiss, HDX</td><td>Comma-separated data formats (e.g., <code>csv,xls</code>)</td></tr>
+      <tr><td><code>--year-from &lt;YEAR&gt;</code></td><td>UNHCR</td><td>Start year (default: 1951)</td></tr>
+      <tr><td><code>--year-to &lt;YEAR&gt;</code></td><td>UNHCR</td><td>End year (default: latest)</td></tr>
+    </table>
+
+    <h2 id="collect">collect</h2>
+    <p>Download all datasets from the selected source(s).</p>
+    <pre><code>inter-collect [--stats &lt;SOURCE&gt;] [source-flags] collect [collect-flags]</code></pre>
+    <table>
+      <tr><th>Flag</th><th>Default</th><th>Description</th></tr>
+      <tr><td><code>-c, --concurrency</code></td><td><code>5</code></td><td>Max parallel downloads (auto-capped for ONS=2, UNHCR=1)</td></tr>
+      <tr><td><code>-d, --delay</code></td><td><code>0.5</code></td><td>Seconds between download batches</td></tr>
+      <tr><td><code>--skip-existing</code></td><td>on</td><td>Skip already downloaded files</td></tr>
+      <tr><td><code>--no-skip-existing</code></td><td>—</td><td>Re-download all files</td></tr>
+      <tr><td><code>--retry-failed</code></td><td>off</td><td>Include previously failed datasets</td></tr>
+      <tr><td><code>--filter-path &lt;PATH&gt;</code></td><td>—</td><td>Only download under this catalog path</td></tr>
+      <tr><td><code>--filter-codes &lt;A,B,...&gt;</code></td><td>—</td><td>Only download these dataset codes</td></tr>
+      <tr><td><code>--dry-run</code></td><td>off</td><td>Preview without downloading</td></tr>
+      <tr><td><code>--verify</code></td><td>off</td><td>Check completed datasets for missing data files and re-download</td></tr>
+      <tr><td><code>--folder-style</code></td><td><code>display</code></td><td><code>display</code> (human-readable) or <code>code</code> (raw codes)</td></tr>
+    </table>
+
+    <h2 id="extract">extract</h2>
+    <p>Decompress <code>.tsv.gz</code> and <code>.sdmx.xml.gz</code> files using parallel workers. Primarily used for Eurostat.</p>
+    <pre><code>inter-collect [--stats &lt;SOURCE&gt;] extract [extract-flags]</code></pre>
+    <table>
+      <tr><th>Flag</th><th>Default</th><th>Description</th></tr>
+      <tr><td><code>-c, --concurrency</code></td><td>auto</td><td>Worker count (default: 2x CPU cores, max 32)</td></tr>
+      <tr><td><code>-b, --buffer</code></td><td><code>64</code></td><td>I/O buffer size in MB per worker</td></tr>
+      <tr><td><code>--force</code></td><td>off</td><td>Re-extract already extracted files</td></tr>
+    </table>
+
+    <h2 id="status">status</h2>
+    <p>Show collection progress, state file summary, and disk statistics.</p>
+    <pre><code>inter-collect [--stats &lt;SOURCE&gt;] status</code></pre>
+    <p>No additional flags — uses <code>-o</code> to find the data directory.</p>
+
+    <h2 id="tree">tree</h2>
+    <p>Fetch and display the category/taxonomy tree from the data source.</p>
+    <pre><code>inter-collect [--stats &lt;SOURCE&gt;] tree [--depth &lt;N&gt;]</code></pre>
+    <table>
+      <tr><th>Flag</th><th>Default</th><th>Description</th></tr>
+      <tr><td><code>--depth</code></td><td><code>3</code></td><td>Maximum tree depth to display</td></tr>
+    </table>
+
+    <h2 id="rename">rename</h2>
+    <p>Rename existing directories between naming styles.</p>
+    <pre><code>inter-collect [--stats &lt;SOURCE&gt;] rename &lt;display|code&gt; [--dry-run]</code></pre>
+    <table>
+      <tr><th>Argument/Flag</th><th>Description</th></tr>
+      <tr><td><code>display</code></td><td>Rename folders to human-readable slugified titles</td></tr>
+      <tr><td><code>code</code></td><td>Rename folders to raw statistical office codes</td></tr>
+      <tr><td><code>--dry-run</code></td><td>Preview what would be renamed without applying</td></tr>
+    </table>
+
+    <h2 id="flag-matrix">Flag Compatibility Matrix</h2>
+    <p>Which source-specific flags apply to which sources:</p>
+    <table>
+      <tr><th>Flag</th><th>Eurostat</th><th>UK ONS</th><th>Swiss</th><th>UNHCR</th><th>HDX</th></tr>
+      <tr><td><code>--scope</code></td><td><span class="badge badge-no">✗</span></td><td><span class="badge badge-no">✗</span></td><td><span class="badge badge-yes">✓</span></td><td><span class="badge badge-no">✗</span></td><td><span class="badge badge-yes">✓</span></td></tr>
+      <tr><td><code>--formats</code></td><td><span class="badge badge-no">✗</span></td><td><span class="badge badge-no">✗</span></td><td><span class="badge badge-yes">✓</span></td><td><span class="badge badge-no">✗</span></td><td><span class="badge badge-yes">✓</span></td></tr>
+      <tr><td><code>--year-from</code></td><td><span class="badge badge-no">✗</span></td><td><span class="badge badge-no">✗</span></td><td><span class="badge badge-no">✗</span></td><td><span class="badge badge-yes">✓</span></td><td><span class="badge badge-no">✗</span></td></tr>
+      <tr><td><code>--year-to</code></td><td><span class="badge badge-no">✗</span></td><td><span class="badge badge-no">✗</span></td><td><span class="badge badge-no">✗</span></td><td><span class="badge badge-yes">✓</span></td><td><span class="badge badge-no">✗</span></td></tr>
+      <tr><td><code>--concurrency</code> cap</td><td>none</td><td><strong>2</strong></td><td>none</td><td><strong>1</strong></td><td>none</td></tr>
+      <tr><td><code>--verify</code></td><td><span class="badge badge-yes">✓</span></td><td><span class="badge badge-yes">✓</span></td><td><span class="badge badge-yes">✓</span></td><td><span class="badge badge-yes">✓</span></td><td><span class="badge badge-yes">✓</span></td></tr>
+    </table>
+
+    <h2 id="examples">Common Patterns</h2>
+
+    <h3>Download everything from all sources</h3>
+    <pre><code>inter-collect collect</code></pre>
+
+    <h3>Preview before downloading</h3>
+    <pre><code>inter-collect --stats europe collect --dry-run</code></pre>
+
+    <h3>Verify and fix incomplete downloads</h3>
+    <pre><code>inter-collect --stats uk collect --verify</code></pre>
+
+    <h3>Retry failed datasets</h3>
+    <pre><code>inter-collect --stats switzerland collect --retry-failed</code></pre>
+
+    <h3>Download specific datasets</h3>
+    <pre><code>inter-collect --stats europe collect --filter-codes prc_hicp_midx,nama_10_gdp</code></pre>
+
+    <h3>Swiss: specific organization, CSV only</h3>
+    <pre><code>inter-collect --stats switzerland --scope bundesamt-fur-energie-bfe --formats csv collect</code></pre>
+
+    <h3>HDX: World Food Programme data</h3>
+    <pre><code>inter-collect --stats hdx --scope wfp collect</code></pre>
+
+    <h3>UNHCR: recent years only</h3>
+    <pre><code>inter-collect --stats unhcr --year-from 2020 --year-to 2024 collect</code></pre>
+
+    <h3>Extract compressed Eurostat data</h3>
+    <pre><code>inter-collect --stats europe extract --concurrency 8 --buffer 128</code></pre>
+
+    <h3>Check collection status</h3>
+    <pre><code>inter-collect status</code></pre>
+  </main>
+</div>
+
+<footer>
+  <a href="./">Inter Stats Collector</a> &middot; <a href="https://github.com/compufreq/inter-stats-collector">GitHub</a> &middot; <a href="https://github.com/compufreq/inter-stats-collector/wiki">Wiki</a>
+</footer>
+
+<button class="sidebar-toggle" aria-label="Toggle sidebar">&#9776;</button>
+<script src="docs.js"></script>
+</body>
+</html>

@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HDX Documentation — Inter Stats Collector</title>
+  <meta name="description" content="Humanitarian Data Exchange (HDX) source documentation for inter-collect: ~19,000+ datasets from 481 organizations via the CKAN API.">
+  <link rel="canonical" href="https://compufreq.github.io/inter-stats-collector/docs-hdx.html">
+  <link rel="stylesheet" href="docs.css">
+</head>
+<body>
+
+<nav>
+  <a href="./" class="logo"><span>&gt;_</span> inter-stats-collector</a>
+  <button class="burger" id="burger" aria-label="Menu" onclick="this.classList.toggle('open');document.getElementById('nav-links').classList.toggle('open')">
+    <svg class="burger-icon" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    <svg class="close-icon" viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg>
+  </button>
+  <div class="links" id="nav-links">
+    <a href="./" onclick="closeMobileMenu()">Home</a>
+    <a href="docs-cli.html" onclick="closeMobileMenu()">CLI Docs</a>
+    <a href="docs-eurostat.html" onclick="closeMobileMenu()">Eurostat</a>
+    <a href="docs-ons.html" onclick="closeMobileMenu()">UK ONS</a>
+    <a href="docs-swiss.html" onclick="closeMobileMenu()">Swiss</a>
+    <a href="docs-unhcr.html" onclick="closeMobileMenu()">UNHCR</a>
+    <a href="docs-hdx.html" class="active" onclick="closeMobileMenu()">HDX</a>
+    <a href="swiss-orgs.html" onclick="closeMobileMenu()">Swiss Orgs</a>
+    <a href="hdx-orgs.html" onclick="closeMobileMenu()">HDX Orgs</a>
+    <a href="https://github.com/compufreq/inter-stats-collector">GitHub</a>
+  </div>
+</nav>
+
+<div class="doc-layout">
+  <aside class="sidebar">
+    <div class="group">Sources</div>
+    <a href="docs-eurostat.html">Eurostat</a>
+    <a href="docs-ons.html">UK ONS</a>
+    <a href="docs-swiss.html">Swiss FSO</a>
+    <a href="docs-unhcr.html">UNHCR</a>
+    <a href="docs-hdx.html" class="active">HDX</a>
+    <div class="sep"></div>
+    <div class="group">Org Browsers</div>
+    <a href="swiss-orgs.html">Swiss Organizations</a>
+    <a href="hdx-orgs.html">HDX Organizations</a>
+    <div class="sep"></div>
+    <div class="group">This Page</div>
+    <a href="#about-hdx">About HDX</a>
+    <a href="#major-organizations">Major Organizations</a>
+    <a href="#api-endpoints">API Endpoints</a>
+    <a href="#commands-usage">Commands &amp; Usage</a>
+    <a href="#flag-compatibility">Flag Compatibility</a>
+    <a href="#quick-reference-all-flags">Quick Reference</a>
+    <a href="#scope-organization-filter">--scope Filter</a>
+    <a href="#formats">--formats</a>
+    <a href="#download-datasets">Download Datasets</a>
+    <a href="#check-collection-status">Check Status</a>
+    <a href="#view-category-tree">View Tree</a>
+    <a href="#rename-folders">Rename Folders</a>
+    <a href="#files-per-dataset">Files Per Dataset</a>
+    <a href="#output-structure">Output Structure</a>
+    <a href="#license">License</a>
+  </aside>
+
+  <main class="doc-content">
+    <h1>HDX (Humanitarian Data Exchange)</h1>
+    <p class="subtitle">CLI flag: <code>--stats hdx</code> &middot; ~244 (UNHCR) / ~19,000+ (all orgs) datasets &middot; <a href="https://data.humdata.org/faqs/devs">HDX CKAN API</a> &middot; No authentication required for reads</p>
+
+    <h2 id="about-hdx">About HDX</h2>
+    <p>The Humanitarian Data Exchange (HDX) is OCHA's open platform for sharing humanitarian data across crises and organisations. It is built on CKAN and hosts data from <strong>481 organizations</strong> including UN agencies, NGOs, governments, and research institutions.</p>
+    <p>HDX complements the UNHCR Statistics API by providing per-country refugee population CSVs, situation reports, border crossing data, camp locations, and voluntary repatriation statistics — the country-level breakdown data that the UNHCR Statistics API does not expose publicly.</p>
+
+    <h2 id="major-organizations">Major Organizations on HDX</h2>
+    <table>
+      <tr><th>Organization</th><th>Datasets</th><th>Focus Area</th></tr>
+      <tr><td><strong>World Bank Group</strong></td><td>4,792</td><td>Development indicators, economics, poverty</td></tr>
+      <tr><td><strong>Humanitarian OpenStreetMap Team</strong></td><td>2,612</td><td>Geospatial / mapping data</td></tr>
+      <tr><td><strong>UNHCR</strong> (default scope)</td><td>1,137</td><td>Refugees, asylum-seekers, IDPs, stateless</td></tr>
+      <tr><td><strong>FEWS NET</strong></td><td>847</td><td>Food security &amp; early warning</td></tr>
+      <tr><td><strong>HeiGIT</strong></td><td>785</td><td>Geoinformatics for humanitarian action</td></tr>
+      <tr><td><strong>WHO</strong></td><td>683</td><td>Health, disease outbreaks, epidemiology</td></tr>
+      <tr><td><strong>WFP</strong></td><td>492</td><td>Food assistance, nutrition, logistics</td></tr>
+      <tr><td><strong>Copernicus</strong></td><td>478</td><td>Satellite / earth observation</td></tr>
+      <tr><td><strong>FAO</strong></td><td>441</td><td>Agriculture, food systems, land use</td></tr>
+      <tr><td><strong>UNICEF</strong></td><td>354</td><td>Children, education, health, nutrition</td></tr>
+      <tr><td><strong>IOM</strong></td><td>273</td><td>Migration, displacement tracking</td></tr>
+      <tr><td><strong>UNESCO</strong></td><td>251</td><td>Education, culture, science</td></tr>
+      <tr><td><strong>ACLED</strong></td><td>246</td><td>Armed conflict events &amp; political violence</td></tr>
+      <tr><td><strong>Meta (AI for Good)</strong></td><td>223</td><td>Population density maps, connectivity</td></tr>
+      <tr><td><strong>OCHA</strong> (regional offices)</td><td>300+</td><td>Humanitarian coordination by country</td></tr>
+    </table>
+
+    <h2 id="api-endpoints">API Endpoints</h2>
+    <p>Base URL: <code>https://data.humdata.org/api/3/action/</code></p>
+    <table>
+      <tr><th>Endpoint</th><th>URL</th><th>Purpose</th></tr>
+      <tr><td>Package Search</td><td><code>GET /api/3/action/package_search</code></td><td>Paginated dataset search</td></tr>
+      <tr><td>Package Show</td><td><code>GET /api/3/action/package_show</code></td><td>Full metadata and download links</td></tr>
+    </table>
+
+    <h2 id="commands-usage">Commands &amp; Usage</h2>
+
+    <h3 id="flag-compatibility">Flag Compatibility</h3>
+    <table>
+      <tr><th>Flag</th><th>Supported</th><th>Notes</th></tr>
+      <tr><td><code>--scope</code></td><td><span class="badge badge-yes">&#10003;</span></td><td>Organization filter: slug or <code>all</code> (default: UNHCR)</td></tr>
+      <tr><td><code>--formats</code></td><td><span class="badge badge-yes">&#10003;</span></td><td>Comma-separated formats (default: csv,xlsx,xls)</td></tr>
+      <tr><td><code>--year-from</code> / <code>--year-to</code></td><td><span class="badge badge-no">&#10007;</span></td><td>Not applicable — UNHCR source only</td></tr>
+      <tr><td><code>--concurrency</code></td><td><span class="badge badge-yes">&#10003;</span></td><td>Default 5; HDX has no documented rate limits</td></tr>
+      <tr><td><code>--verify</code></td><td><span class="badge badge-yes">&#10003;</span></td><td>Checks that data files (CSV/XLSX/XLS) exist on disk</td></tr>
+      <tr><td><code>--dry-run</code></td><td><span class="badge badge-yes">&#10003;</span></td><td>Preview without downloading</td></tr>
+      <tr><td><code>--retry-failed</code></td><td><span class="badge badge-yes">&#10003;</span></td><td>Retry previously failed datasets</td></tr>
+      <tr><td><code>--filter-path</code></td><td><span class="badge badge-yes">&#10003;</span></td><td>Filter by group path</td></tr>
+      <tr><td><code>--filter-codes</code></td><td><span class="badge badge-yes">&#10003;</span></td><td>Filter by CKAN package names</td></tr>
+      <tr><td><code>--folder-style</code></td><td><span class="badge badge-yes">&#10003;</span></td><td><code>display</code> (slugified) or <code>code</code> (raw CKAN names)</td></tr>
+    </table>
+
+    <h3 id="quick-reference-all-flags">Quick Reference (All Flags)</h3>
+    <pre><code># collect — all applicable flags for HDX
+inter-collect --stats hdx \
+  --scope &lt;ORG_SLUG:str|all&gt; \
+  --formats &lt;csv,xlsx,xls&gt; \
+  collect \
+  -o &lt;OUTPUT_DIR&gt; \
+  -c &lt;CONCURRENCY:int&gt; \
+  -d &lt;DELAY:seconds&gt; \
+  --skip-existing | --no-skip-existing \
+  --retry-failed \
+  --filter-path &lt;GROUP_PATH:str&gt; \
+  --filter-codes &lt;PACKAGE1,PACKAGE2,...&gt; \
+  --dry-run \
+  --verify \
+  --folder-style &lt;display|code&gt; \
+  -v
+
+# status — show collection progress
+inter-collect --stats hdx status -o &lt;OUTPUT_DIR&gt;
+
+# tree — display category hierarchy
+inter-collect --stats hdx tree --depth &lt;DEPTH:int&gt; -v
+
+# rename — switch folder naming style
+inter-collect --stats hdx rename &lt;display|code&gt; -o &lt;OUTPUT_DIR&gt; --dry-run -v</code></pre>
+    <p><strong>Not applicable for HDX:</strong> <code>--year-from</code>, <code>--year-to</code> (silently ignored)</p>
+
+    <h3 id="scope-organization-filter"><code>--scope</code> (Organization Filter)</h3>
+    <p>Use <code>--scope</code> to select which organization's datasets to download. Accepts any CKAN organization slug.</p>
+    <ul>
+      <li><strong>(default)</strong>: UNHCR datasets only (~244 with downloadable CSV/XLS)</li>
+      <li><code>--scope all</code>: All 364+ organizations (~16,390 datasets)</li>
+      <li><code>--scope ORG_SLUG</code>: Any specific organization</li>
+    </ul>
+    <p><a href="hdx-orgs.html">Browse all HDX organizations</a> to find the right scope value.</p>
+
+    <h4>UN Agencies &amp; Major International Organizations</h4>
+    <table>
+      <tr><th>Scope Value</th><th>Organization</th><th>Datasets</th></tr>
+      <tr><td><code>unhcr</code></td><td>UNHCR - The UN Refugee Agency <strong>(default)</strong></td><td>1,137</td></tr>
+      <tr><td><code>world-health-organization</code></td><td>World Health Organization (WHO)</td><td>683</td></tr>
+      <tr><td><code>wfp</code></td><td>WFP - World Food Programme</td><td>492</td></tr>
+      <tr><td><code>fao</code></td><td>Food and Agriculture Organization (FAO)</td><td>441</td></tr>
+      <tr><td><code>unicef-data</code></td><td>UNICEF Data and Analytics (HQ)</td><td>354</td></tr>
+      <tr><td><code>international-organization-for-migration</code></td><td>International Organization for Migration (IOM)</td><td>273</td></tr>
+      <tr><td><code>unesco</code></td><td>UNESCO</td><td>251</td></tr>
+    </table>
+
+    <h4>OCHA Regional Offices</h4>
+    <table>
+      <tr><th>Scope Value</th><th>Organization</th><th>Datasets</th></tr>
+      <tr><td><code>ocha-fts</code></td><td>OCHA Financial Tracking System (FTS)</td><td>239</td></tr>
+      <tr><td><code>ocha-fiss</code></td><td>OCHA Field Information Services Section (FISS)</td><td>220</td></tr>
+      <tr><td><code>ocha-rolac</code></td><td>OCHA Latin America and the Caribbean (ROLAC)</td><td>177</td></tr>
+      <tr><td><code>ocha-rosea</code></td><td>OCHA Regional Office for Southern and Eastern Africa (ROSEA)</td><td>127</td></tr>
+      <tr><td><code>ocha-hpc-tools</code></td><td>OCHA Humanitarian Programme Cycle Tools (HPC Tools)</td><td>106</td></tr>
+      <tr><td><code>ocha-roap</code></td><td>OCHA Regional Office for Asia and the Pacific (ROAP)</td><td>106</td></tr>
+      <tr><td><code>ocha-rowca</code></td><td>OCHA West and Central Africa (ROWCA)</td><td>102</td></tr>
+    </table>
+
+    <h4>Development, Finance &amp; Geospatial</h4>
+    <table>
+      <tr><th>Scope Value</th><th>Organization</th><th>Datasets</th></tr>
+      <tr><td><code>world-bank-group</code></td><td>World Bank Group</td><td>4,792</td></tr>
+      <tr><td><code>hot</code></td><td>Humanitarian OpenStreetMap Team (HOT)</td><td>2,612</td></tr>
+      <tr><td><code>worldpop</code></td><td>WorldPop</td><td>1,569</td></tr>
+      <tr><td><code>fewsnet</code></td><td>FEWS NET</td><td>847</td></tr>
+      <tr><td><code>heidelberg-institute-for-geoinformation-technology</code></td><td>HeiGIT</td><td>785</td></tr>
+      <tr><td><code>acled</code></td><td>Armed Conflict Location &amp; Event Data Project (ACLED)</td><td>246</td></tr>
+    </table>
+    <p>Plus ~250 more smaller organizations. Use <code>--scope all</code> to include everything, or query the <a href="https://data.humdata.org/api/3/action/organization_list?all_fields=true">HDX Organization API</a> for the complete list.</p>
+
+    <h3 id="formats"><code>--formats</code></h3>
+    <ul>
+      <li>Default: <code>csv,xlsx,xls</code> (all downloadable data formats)</li>
+      <li>Skips PDF, Web App, KMZ, and other non-data resources</li>
+    </ul>
+
+    <h3 id="download-datasets">Download Datasets</h3>
+    <pre><code># Download all UNHCR datasets (default)
+inter-collect --stats hdx collect
+
+# Preview what would be downloaded
+inter-collect --stats hdx collect --dry-run
+
+# Verify completed datasets have actual data files, re-download if missing
+inter-collect --stats hdx collect --verify
+
+# World Food Programme
+inter-collect --stats hdx --scope wfp collect
+
+# International Organization for Migration
+inter-collect --stats hdx --scope international-organization-for-migration collect
+
+# World Health Organization, CSV only
+inter-collect --stats hdx --scope world-health-organization --formats csv collect
+
+# All organizations
+inter-collect --stats hdx --scope all collect
+
+# Download specific datasets by CKAN package name
+inter-collect --stats hdx collect --filter-codes unhcr-population-data-for-afg,unhcr-situations
+
+# Retry previously failed datasets
+inter-collect --stats hdx collect --retry-failed</code></pre>
+
+    <h3 id="check-collection-status">Check Collection Status</h3>
+    <pre><code>inter-collect --stats hdx status</code></pre>
+
+    <h3 id="view-category-tree">View Category Tree</h3>
+    <pre><code>inter-collect --stats hdx tree
+inter-collect --stats hdx tree --depth 3</code></pre>
+
+    <h3 id="rename-folders">Rename Folders</h3>
+    <pre><code>inter-collect --stats hdx rename code --dry-run
+inter-collect --stats hdx rename display</code></pre>
+
+    <h2 id="files-per-dataset">Files Per Dataset</h2>
+    <table>
+      <tr><th>File</th><th>Format</th><th>Description</th></tr>
+      <tr><td><code>{code}_info.json</code></td><td>JSON</td><td>Catalog snapshot (organization, license, resource URLs)</td></tr>
+      <tr><td><code>{code}.csv</code></td><td>CSV</td><td>Data file (if available)</td></tr>
+      <tr><td><code>{code}.xlsx</code></td><td>Excel</td><td>Data file (if available)</td></tr>
+      <tr><td><code>{code}.xls</code></td><td>Excel (legacy)</td><td>Data file (if available)</td></tr>
+    </table>
+    <p>When multiple resources share the same format, filenames use the sanitised resource name.</p>
+
+    <h2 id="output-structure">Output Structure</h2>
+    <pre>stats_data/hdx/
+  hdx_tree_index.json
+  .hdx_state.json
+  hdx/
+    refugees/
+      unhcr-population-data-for-afg/
+        unhcr-population-data-for-afg_info.json
+        unhcr-population-data-for-afg.csv
+    asylum_seekers/
+      ...</pre>
+
+    <h2 id="license">License</h2>
+    <p>Varies per dataset. Common licenses on HDX:</p>
+    <table>
+      <tr><th>License</th><th>Description</th></tr>
+      <tr><td><strong>CC BY-IGO</strong></td><td>Most UNHCR data — share/adapt with attribution</td></tr>
+      <tr><td><strong>CC BY</strong></td><td>Share/adapt for any purpose with attribution</td></tr>
+      <tr><td><strong>CC BY-SA</strong></td><td>Share-alike — derivatives must use same license</td></tr>
+      <tr><td><strong>ODC-ODbL</strong></td><td>Database-specific — attribution + share-alike</td></tr>
+      <tr><td><strong>CC0</strong></td><td>Public domain — no restrictions</td></tr>
+    </table>
+    <p>Check each dataset's metadata for its specific license. The <code>_info.json</code> file includes <code>license_url</code> and <code>license_title</code> fields.</p>
+  </main>
+</div>
+
+<footer>
+  <a href="./">Inter Stats Collector</a> &middot; <a href="https://github.com/compufreq/inter-stats-collector">GitHub</a> &middot; <a href="https://github.com/compufreq/inter-stats-collector/wiki">Wiki</a>
+</footer>
+
+<button class="sidebar-toggle" aria-label="Toggle sidebar">&#9776;</button>
+<script src="docs.js"></script>
+</body>
+</html>

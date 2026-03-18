@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UNHCR Documentation — Inter Stats Collector</title>
+  <meta name="description" content="UNHCR Refugee Statistics source documentation for inter-collect: ~450 datasets via the UNHCR Population Statistics API.">
+  <link rel="canonical" href="https://compufreq.github.io/inter-stats-collector/docs-unhcr.html">
+  <link rel="stylesheet" href="docs.css">
+</head>
+<body>
+
+<nav>
+  <a href="./" class="logo"><span>&gt;_</span> inter-stats-collector</a>
+  <button class="burger" id="burger" aria-label="Menu" onclick="this.classList.toggle('open');document.getElementById('nav-links').classList.toggle('open')">
+    <svg class="burger-icon" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    <svg class="close-icon" viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg>
+  </button>
+  <div class="links" id="nav-links">
+    <a href="./" onclick="closeMobileMenu()">Home</a>
+    <a href="docs-cli.html" onclick="closeMobileMenu()">CLI Docs</a>
+    <a href="docs-eurostat.html" onclick="closeMobileMenu()">Eurostat</a>
+    <a href="docs-ons.html" onclick="closeMobileMenu()">UK ONS</a>
+    <a href="docs-swiss.html" onclick="closeMobileMenu()">Swiss</a>
+    <a href="docs-unhcr.html" class="active" onclick="closeMobileMenu()">UNHCR</a>
+    <a href="docs-hdx.html" onclick="closeMobileMenu()">HDX</a>
+    <a href="swiss-orgs.html" onclick="closeMobileMenu()">Swiss Orgs</a>
+    <a href="hdx-orgs.html" onclick="closeMobileMenu()">HDX Orgs</a>
+    <a href="https://github.com/compufreq/inter-stats-collector">GitHub</a>
+  </div>
+</nav>
+
+<div class="doc-layout">
+  <aside class="sidebar">
+    <div class="group">Sources</div>
+    <a href="docs-eurostat.html">Eurostat</a>
+    <a href="docs-ons.html">UK ONS</a>
+    <a href="docs-swiss.html">Swiss FSO</a>
+    <a href="docs-unhcr.html" class="active">UNHCR</a>
+    <a href="docs-hdx.html">HDX</a>
+    <div class="sep"></div>
+    <div class="group">Org Browsers</div>
+    <a href="swiss-orgs.html">Swiss Organizations</a>
+    <a href="hdx-orgs.html">HDX Organizations</a>
+    <div class="sep"></div>
+    <div class="group">This Page</div>
+    <a href="#api-endpoints">API Endpoints</a>
+    <a href="#commands-usage">Commands &amp; Usage</a>
+    <a href="#flag-compatibility">Flag Compatibility</a>
+    <a href="#quick-reference-all-flags">Quick Reference</a>
+    <a href="#year-filtering">Year Filtering</a>
+    <a href="#download-datasets">Download Datasets</a>
+    <a href="#check-collection-status">Check Status</a>
+    <a href="#view-category-tree">View Tree</a>
+    <a href="#rename-folders">Rename Folders</a>
+    <a href="#files-per-dataset">Files Per Dataset</a>
+    <a href="#rate-limiting">Rate Limiting</a>
+    <a href="#output-structure">Output Structure</a>
+    <a href="#license">License</a>
+  </aside>
+
+  <main class="doc-content">
+    <h1>UNHCR Refugee Statistics</h1>
+    <p class="subtitle">CLI flag: <code>--stats unhcr</code> &middot; ~450 datasets (6 endpoints x 75 years) &middot; <a href="https://api.unhcr.org/docs/refugee-statistics.html">UNHCR Population Statistics API</a> &middot; No authentication required</p>
+
+    <h2 id="api-endpoints">API Endpoints</h2>
+    <p>Base URL: <code>https://api.unhcr.org/population/v1</code></p>
+    <table>
+      <tr><th>Endpoint</th><th>Path</th><th>Data</th></tr>
+      <tr><td>Population</td><td><code>/population/</code></td><td>Stock figures: refugees, asylum-seekers, IDPs, stateless</td></tr>
+      <tr><td>Asylum Applications</td><td><code>/asylum-applications/</code></td><td>Individual asylum applications by country</td></tr>
+      <tr><td>Asylum Decisions</td><td><code>/asylum-decisions/</code></td><td>Decisions: recognized, rejected, closed</td></tr>
+      <tr><td>Solutions</td><td><code>/solutions/</code></td><td>Durable solutions: return, resettlement, naturalisation</td></tr>
+      <tr><td>Demographics</td><td><code>/demographics/</code></td><td>Age/gender breakdown of displaced populations</td></tr>
+      <tr><td>UNRWA</td><td><code>/unrwa/</code></td><td>UNRWA-registered Palestine refugees</td></tr>
+    </table>
+    <p>Reference endpoints: <code>/countries/</code> (249 countries), <code>/regions/</code> (6 regions), <code>/years/</code> (1951-present)</p>
+
+    <h2 id="commands-usage">Commands &amp; Usage</h2>
+
+    <h3 id="flag-compatibility">Flag Compatibility</h3>
+    <table>
+      <tr><th>Flag</th><th>Supported</th><th>Notes</th></tr>
+      <tr><td><code>--scope</code></td><td><span class="badge badge-no">&#10007;</span></td><td>Not applicable — UNHCR has a single fixed API</td></tr>
+      <tr><td><code>--formats</code></td><td><span class="badge badge-no">&#10007;</span></td><td>Not applicable — always downloads JSON data</td></tr>
+      <tr><td><code>--year-from</code></td><td><span class="badge badge-yes">&#10003;</span></td><td>Start year filter (default: 1951)</td></tr>
+      <tr><td><code>--year-to</code></td><td><span class="badge badge-yes">&#10003;</span></td><td>End year filter (default: latest available)</td></tr>
+      <tr><td><code>--concurrency</code></td><td><span class="badge badge-yes">&#10003;</span></td><td><strong>Auto-capped at 1</strong> (UNHCR rate limits aggressively)</td></tr>
+      <tr><td><code>--verify</code></td><td><span class="badge badge-yes">&#10003;</span></td><td>Checks that <code>_data.json</code> files exist on disk</td></tr>
+      <tr><td><code>--dry-run</code></td><td><span class="badge badge-yes">&#10003;</span></td><td>Preview without downloading</td></tr>
+      <tr><td><code>--retry-failed</code></td><td><span class="badge badge-yes">&#10003;</span></td><td>Retry datasets that failed due to 403/429 errors</td></tr>
+      <tr><td><code>--filter-path</code></td><td><span class="badge badge-yes">&#10003;</span></td><td>Filter by endpoint path (e.g., <code>unhcr/population</code>)</td></tr>
+      <tr><td><code>--filter-codes</code></td><td><span class="badge badge-yes">&#10003;</span></td><td>Filter by dataset codes (e.g., <code>population_2023,asylum-applications_2022</code>)</td></tr>
+      <tr><td><code>--folder-style</code></td><td><span class="badge badge-yes">&#10003;</span></td><td><code>display</code> (default) or <code>code</code></td></tr>
+    </table>
+
+    <h3 id="quick-reference-all-flags">Quick Reference (All Flags)</h3>
+    <pre><code># collect — all applicable flags for UNHCR
+inter-collect --stats unhcr \
+  --year-from &lt;START_YEAR:int&gt; \
+  --year-to &lt;END_YEAR:int&gt; \
+  collect \
+  -o &lt;OUTPUT_DIR&gt; \
+  -c &lt;CONCURRENCY:int&gt; \
+  -d &lt;DELAY:seconds&gt; \
+  --skip-existing | --no-skip-existing \
+  --retry-failed \
+  --filter-path &lt;ENDPOINT_PATH:str&gt; \
+  --filter-codes &lt;ENDPOINT_YEAR1,ENDPOINT_YEAR2,...&gt; \
+  --dry-run \
+  --verify \
+  --folder-style &lt;display|code&gt; \
+  -v
+
+# status — show collection progress
+inter-collect --stats unhcr status -o &lt;OUTPUT_DIR&gt;
+
+# tree — display endpoint/year hierarchy
+inter-collect --stats unhcr tree --depth &lt;DEPTH:int&gt; -v
+
+# rename — switch folder naming style
+inter-collect --stats unhcr rename &lt;display|code&gt; -o &lt;OUTPUT_DIR&gt; --dry-run -v</code></pre>
+    <p><strong>Not applicable for UNHCR:</strong> <code>--scope</code>, <code>--formats</code> (silently ignored)</p>
+    <p><strong>Note:</strong> <code>--concurrency</code> is auto-capped at <strong>1</strong> (sequential) due to strict rate limiting.</p>
+
+    <h3 id="year-filtering">Year Filtering (<code>--year-from</code> / <code>--year-to</code>)</h3>
+    <pre><code># All years (default: 1951-present, ~450 datasets)
+inter-collect --stats unhcr collect
+
+# Recent data only
+inter-collect --stats unhcr --year-from 2020 --year-to 2023 collect
+
+# From a year onward
+inter-collect --stats unhcr --year-from 2015 collect
+
+# Single year
+inter-collect --stats unhcr --year-from 2023 --year-to 2023 collect</code></pre>
+
+    <h3 id="download-datasets">Download Datasets</h3>
+    <pre><code># Download all endpoints, all years
+inter-collect --stats unhcr collect
+
+# Preview what would be downloaded
+inter-collect --stats unhcr collect --dry-run
+
+# Download specific endpoint+year combinations
+inter-collect --stats unhcr collect --filter-codes population_2023,demographics_2023
+
+# Retry previously failed datasets
+inter-collect --stats unhcr collect --retry-failed
+
+# Verify completed datasets have data files
+inter-collect --stats unhcr collect --verify</code></pre>
+    <p><strong>Important:</strong> UNHCR concurrency is automatically capped at 1 regardless of what you pass with <code>--concurrency</code>. This is because the UNHCR API has strict undocumented rate limits.</p>
+
+    <h3 id="check-collection-status">Check Collection Status</h3>
+    <pre><code>inter-collect --stats unhcr status</code></pre>
+
+    <h3 id="view-category-tree">View Category Tree</h3>
+    <pre><code>inter-collect --stats unhcr tree
+inter-collect --stats unhcr tree --depth 3</code></pre>
+
+    <h3 id="rename-folders">Rename Folders</h3>
+    <pre><code>inter-collect --stats unhcr rename code --dry-run
+inter-collect --stats unhcr rename display</code></pre>
+
+    <h2 id="files-per-dataset">Files Per Dataset</h2>
+    <p>For each endpoint+year combination (e.g., <code>population_2023</code>), <strong>2 files</strong> are created:</p>
+    <table>
+      <tr><th>File</th><th>Format</th><th>Description</th></tr>
+      <tr><td><code>population_2023_info.json</code></td><td>JSON</td><td>Catalog snapshot (endpoint, year, page count)</td></tr>
+      <tr><td><code>population_2023_data.json</code></td><td>JSON</td><td>Complete paginated data with all rows</td></tr>
+    </table>
+    <p>The <code>_data.json</code> file contains all rows across all API pages, merged into a single JSON array with aggregate totals.</p>
+
+    <h2 id="rate-limiting">Rate Limiting</h2>
+    <p>The UNHCR API has undocumented rate limits. The collector uses:</p>
+    <ul>
+      <li>Sequential requests (concurrency: 1)</li>
+      <li>2-second delay between requests</li>
+      <li>Exponential backoff on 429/5xx: 15s, 30s, 60s, 120s</li>
+    </ul>
+
+    <h2 id="output-structure">Output Structure</h2>
+    <pre>stats_data/unhcr/
+  unhcr_tree_index.json
+  .unhcr_state.json
+  unhcr/
+    population/
+      population_2023/
+        population_2023_info.json
+        population_2023_data.json
+    asylum_applications/
+      asylum-applications_2023/
+        ...
+    demographics/
+      ...</pre>
+
+    <h2 id="license">License</h2>
+    <p><a href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International (CC BY 4.0)</a></p>
+    <table>
+      <tr><th>Term</th><th>Details</th></tr>
+      <tr><td>Commercial use</td><td>Allowed</td></tr>
+      <tr><td>Attribution</td><td>Required — "UNHCR Refugee Population Statistics Database"</td></tr>
+      <tr><td>Full terms</td><td><a href="https://www.unhcr.org/what-we-do/data-and-publications/data-and-statistics/terms-use-datasets">UNHCR Terms of Use for Datasets</a></td></tr>
+    </table>
+  </main>
+</div>
+
+<footer>
+  <a href="./">Inter Stats Collector</a> &middot; <a href="https://github.com/compufreq/inter-stats-collector">GitHub</a> &middot; <a href="https://github.com/compufreq/inter-stats-collector/wiki">Wiki</a>
+</footer>
+
+<button class="sidebar-toggle" aria-label="Toggle sidebar">&#9776;</button>
+<script src="docs.js"></script>
+</body>
+</html>
