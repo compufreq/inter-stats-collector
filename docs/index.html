@@ -479,22 +479,25 @@
 
     /* Responsive */
     @media (max-width: 768px) {
-      .burger { display: block; }
+      nav { backdrop-filter: none; background: var(--bg); }
+      .burger { display: block; position: relative; z-index: 301; }
       nav .links {
         display: none;
         position: fixed;
-        top: 0; left: 0; right: 0; bottom: 0;
-        background: rgba(10, 14, 23, 0.97);
-        backdrop-filter: blur(20px);
+        top: 0; left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: var(--bg);
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        gap: 1.8rem;
-        z-index: 100;
+        gap: 2rem;
+        z-index: 300;
       }
       nav .links.open { display: flex; }
-      nav .links a { font-size: 1.2rem; }
-      nav .links .gh-btn { font-size: 1rem; padding: 0.7rem 1.5rem; }
+      nav .links a { font-size: 1.3rem; color: var(--text); }
+      nav .links a:hover { color: var(--text-bright); }
+      nav .links .gh-btn { font-size: 1.1rem; padding: 0.8rem 1.8rem; }
       .hero { padding: 7rem 1.5rem 3rem; }
       .stats-bar { gap: 1.5rem; }
       .stat .number { font-size: 2rem; }
