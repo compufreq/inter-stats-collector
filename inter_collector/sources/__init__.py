@@ -20,8 +20,9 @@ SOURCE_REGISTRY: dict[str, tuple[str, str]] = {
 def resolve_source(stats_key: str, **kwargs) -> "DataSource":
     """Resolve a --stats key to an instantiated DataSource.
 
-    Extra kwargs are forwarded to the source constructor (e.g., org_filter
-    and download_formats for SwissSource).
+    Extra kwargs are forwarded only if the source constructor accepts them.
+    Unrecognised kwargs are silently ignored (e.g., org_filter is ignored
+    for EurostatSource which doesn't support it).
     """
     if stats_key not in SOURCE_REGISTRY:
         raise ValueError(f"Unknown source: {stats_key!r}. Available: {list(SOURCE_REGISTRY.keys())}")
@@ -29,9 +30,13 @@ def resolve_source(stats_key: str, **kwargs) -> "DataSource":
     module_path, class_name = SOURCE_REGISTRY[stats_key]
 
     import importlib
+    import inspect
     mod = importlib.import_module(module_path)
     cls = getattr(mod, class_name)
-    return cls(**kwargs)
+    # Only pass kwargs that the constructor accepts
+    sig = inspect.signature(cls.__init__)
+    accepted = {k: v for k, v in kwargs.items() if k in sig.parameters}
+    return cls(**accepted)
 
 
 def resolve_all_sources(**kwargs) -> list["DataSource"]:
