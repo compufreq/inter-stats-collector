@@ -29,44 +29,55 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Fetch Swiss opendata.swiss organizations
+      - name: Fetch organization data from CKAN APIs
         run: |
-          echo "Fetching Swiss orgs..."
-          curl -sf --retry 3 --retry-delay 10 \
-            "https://ckan.opendata.swiss/api/3/action/organization_list?all_fields=true&limit=500" \
-            -o docs/swiss-orgs-data.json
-          python3 -c "
-          import json
-          with open('docs/swiss-orgs-data.json') as f:
-              data = json.load(f)
-          orgs = [o for o in data['result'] if o.get('package_count', 0) > 0]
-          print(f'Swiss: {len(orgs)} organizations with datasets')
-          "
+          python3 << 'PYEOF'
+          import json, urllib.request, time, sys
 
-      - name: Fetch HDX organizations (paginated)
-        run: |
-          echo "Fetching HDX orgs (page 1)..."
-          curl -sf --retry 3 --retry-delay 10 \
-            "https://data.humdata.org/api/3/action/organization_list?all_fields=true&limit=500" \
-            -o /tmp/hdx_page1.json
+          def fetch_json(url, retries=3, delay=15):
+              """Fetch JSON with retries and delay between attempts."""
+              for attempt in range(1, retries + 1):
+                  try:
+                      req = urllib.request.Request(url, headers={'User-Agent': 'inter-stats-collector/2.0'})
+                      with urllib.request.urlopen(req, timeout=30) as resp:
+                          return json.loads(resp.read())
+                  except Exception as e:
+                      print(f"  Attempt {attempt}/{retries} failed: {e}")
+                      if attempt < retries:
+                          time.sleep(delay)
+              return None
 
-          echo "Fetching HDX orgs (page 2)..."
-          curl -sf --retry 3 --retry-delay 10 \
-            "https://data.humdata.org/api/3/action/organization_list?all_fields=true&limit=500&offset=500" \
-            -o /tmp/hdx_page2.json
+          # Fetch Swiss orgs
+          print("Fetching Swiss opendata.swiss organizations...")
+          swiss = fetch_json("https://ckan.opendata.swiss/api/3/action/organization_list?all_fields=true&limit=500")
+          if swiss and swiss.get("success"):
+              orgs = [o for o in swiss["result"] if o.get("package_count", 0) > 0]
+              print(f"  Swiss: {len(orgs)} organizations with datasets")
+              with open("docs/swiss-orgs-data.json", "w") as f:
+                  json.dump(swiss, f)
+          else:
+              print("  WARNING: Could not fetch Swiss orgs, pages will use live API fallback")
 
-          python3 -c "
-          import json
-          with open('/tmp/hdx_page1.json') as f:
-              d1 = json.load(f)
-          with open('/tmp/hdx_page2.json') as f:
-              d2 = json.load(f)
-          d1['result'].extend(d2['result'])
-          orgs = [o for o in d1['result'] if o.get('package_count', 0) > 0]
-          print(f'HDX: {len(orgs)} organizations with datasets')
-          with open('docs/hdx-orgs-data.json', 'w') as f:
-              json.dump(d1, f)
-          "
+          time.sleep(5)  # polite delay between APIs
+
+          # Fetch HDX orgs (paginated)
+          print("Fetching HDX organizations...")
+          hdx1 = fetch_json("https://data.humdata.org/api/3/action/organization_list?all_fields=true&limit=500")
+          time.sleep(3)
+          hdx2 = fetch_json("https://data.humdata.org/api/3/action/organization_list?all_fields=true&limit=500&offset=500")
+
+          if hdx1 and hdx1.get("success"):
+              if hdx2 and hdx2.get("success"):
+                  hdx1["result"].extend(hdx2["result"])
+              orgs = [o for o in hdx1["result"] if o.get("package_count", 0) > 0]
+              print(f"  HDX: {len(orgs)} organizations with datasets")
+              with open("docs/hdx-orgs-data.json", "w") as f:
+                  json.dump(hdx1, f)
+          else:
+              print("  WARNING: Could not fetch HDX orgs, pages will use live API fallback")
+
+          print("Done.")
+          PYEOF
 
       - name: Add timestamp metadata
         run: |
