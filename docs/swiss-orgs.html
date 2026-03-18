@@ -112,14 +112,31 @@
 </footer>
 
 <script>
-const API = 'https://ckan.opendata.swiss/api/3/action/organization_list?all_fields=true&limit=500';
+var STATIC_JSON = './swiss-orgs-data.json';
+var LIVE_API = 'https://ckan.opendata.swiss/api/3/action/organization_list?all_fields=true&limit=500';
+var META_JSON = './org-data-meta.json';
 let allOrgs = [];
 let currentSort = 'count';
 
 async function fetchOrgs() {
   try {
-    const resp = await fetch(API);
-    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    // Try pre-fetched static JSON first (updated every 2 days by GitHub Actions)
+    var resp;
+    try {
+      resp = await fetch(STATIC_JSON);
+      if (!resp.ok) throw new Error('no cache');
+      // Show last-updated timestamp in badge tooltip
+      fetch(META_JSON).then(function(r) { return r.json(); }).then(function(m) {
+        if (m.fetched_at) {
+          var badge = document.getElementById('stats-badge');
+          badge.title = 'Data cached: ' + new Date(m.fetched_at).toLocaleString();
+        }
+      }).catch(function() {});
+    } catch(e) {
+      // Fall back to live CKAN API
+      resp = await fetch(LIVE_API);
+      if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    }
     const data = await resp.json();
     if (!data.success) throw new Error('API returned success=false');
     allOrgs = data.result

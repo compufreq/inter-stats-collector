@@ -112,12 +112,14 @@
 </footer>
 
 <script>
-var API = 'https://data.humdata.org/api/3/action/organization_list?all_fields=true&limit=500';
+var STATIC_JSON = './hdx-orgs-data.json';
+var LIVE_API = 'https://data.humdata.org/api/3/action/organization_list?all_fields=true&limit=500';
+var META_JSON = './org-data-meta.json';
 var allOrgs = [];
 var currentSort = 'count';
 
-function fetchAllOrgs(offset, accumulated) {
-  var url = API + '&offset=' + offset;
+function fetchAllOrgsLive(offset, accumulated) {
+  var url = LIVE_API + '&offset=' + offset;
   return fetch(url).then(function(resp) {
     if (!resp.ok) throw new Error('HTTP ' + resp.status);
     return resp.json();
@@ -126,14 +128,31 @@ function fetchAllOrgs(offset, accumulated) {
     var results = data.result || [];
     var all = accumulated.concat(results);
     if (results.length >= 500) {
-      return fetchAllOrgs(offset + 500, all);
+      return fetchAllOrgsLive(offset + 500, all);
     }
     return all;
   });
 }
 
 function init() {
-  fetchAllOrgs(0, []).then(function(orgs) {
+  // Try pre-fetched static JSON first (updated every 2 days by GitHub Actions)
+  fetch(STATIC_JSON).then(function(resp) {
+    if (!resp.ok) throw new Error('no cache');
+    return resp.json();
+  }).then(function(data) {
+    if (!data.success) throw new Error('invalid cache');
+    // Show last-updated timestamp in badge tooltip
+    fetch(META_JSON).then(function(r) { return r.json(); }).then(function(m) {
+      if (m.fetched_at) {
+        var badge = document.getElementById('stats-badge');
+        badge.title = 'Data cached: ' + new Date(m.fetched_at).toLocaleString();
+      }
+    }).catch(function() {});
+    return data.result || [];
+  }).catch(function() {
+    // Fall back to live paginated API
+    return fetchAllOrgsLive(0, []);
+  }).then(function(orgs) {
     allOrgs = orgs
       .filter(function(o) { return (o.package_count || 0) > 0; })
       .map(function(o) {
