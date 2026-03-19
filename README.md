@@ -216,6 +216,40 @@ Data from **HDX** at `data.humdata.org`, OCHA's open humanitarian data platform 
 
 **License**: Varies per dataset. Most UNHCR data uses CC BY-IGO. Other common licenses: CC BY, CC BY-SA, ODC-ODbL, CC0.
 
+### Netherlands — data.overheid.nl (`--stats netherlands`)
+
+Data from **data.overheid.nl**, the Dutch national open government data portal (CKAN-based).
+
+| Source | Endpoint | What It Provides |
+|--------|----------|-----------------|
+| **Dataset search** | `GET /data/api/3/action/package_search` | Paginated datasets with resource URLs |
+| **Dataset detail** | `GET /data/api/3/action/package_show` | Full metadata and download links |
+
+Base URL: `https://data.overheid.nl/data/api/3/action/`
+
+**Default scope**: All organizations (~12,245 datasets with downloadable resources). Use `--scope ORG_SLUG` to filter.
+
+**Formats**: CSV, XLS, XLSX, JSON, XML, ZIP, GeoJSON.
+
+**License**: CC0 (Public Domain) or CC BY — varies per dataset.
+
+### Germany — GovData.de (`--stats germany`)
+
+Data from **GovData.de**, Germany's open government data portal (CKAN-based). The largest source in the collector.
+
+| Source | Endpoint | What It Provides |
+|--------|----------|-----------------|
+| **Dataset search** | `GET /ckan/api/3/action/package_search` | Paginated datasets with resource URLs |
+| **Dataset detail** | `GET /ckan/api/3/action/package_show` | Full metadata and download links |
+
+Base URL: `https://www.govdata.de/ckan/api/3/action/`
+
+**Default scope**: All organizations (~92,722 datasets with downloadable resources from ~149,342 total). Use `--scope ORG_SLUG` to filter.
+
+**Formats**: CSV, XLS, XLSX, JSON, XML, ZIP, GML, GeoJSON, SHP, NetCDF (10 formats).
+
+**License**: Datenlizenz Deutschland 2.0 (DL-DE-BY-2.0) or CC BY 4.0 — varies per dataset. Both allow commercial use with attribution.
+
 ---
 
 ## What Gets Downloaded Per Dataset
@@ -270,6 +304,33 @@ For a dataset named `unhcr-population-data-for-afg`, files depend on available f
 | `unhcr-population-data-for-afg_info.json` | JSON | Catalog snapshot (organization, license, resource URLs) |
 | `unhcr-population-data-for-afg.csv` | CSV | Data file (refugees, asylum-seekers by country) |
 | `unhcr-population-data-for-afg.xlsx` | Excel | Data file (if available) |
+
+### Netherlands (data.overheid.nl)
+
+For a dataset named `subsidieregister-2019`, files depend on available formats:
+
+| File | Format | Description |
+|------|--------|-------------|
+| `subsidieregister-2019_info.json` | JSON | Catalog snapshot (organization, license, resource URLs) |
+| `subsidieregister-2019.csv` | CSV | Data file (if available) |
+| `subsidieregister-2019.json` | JSON | Structured data (if available) |
+| `subsidieregister-2019.xml` | XML | XML data (if available) |
+
+### Germany (GovData.de)
+
+For a dataset named `luftqualitatsdaten-2024`, up to **10 formats** may be downloaded:
+
+| File | Format | Description |
+|------|--------|-------------|
+| `luftqualitatsdaten-2024_info.json` | JSON | Catalog snapshot (organization, license, resource URLs) |
+| `luftqualitatsdaten-2024.csv` | CSV | Tabular data |
+| `luftqualitatsdaten-2024.xlsx` | Excel | Spreadsheet data |
+| `luftqualitatsdaten-2024.xml` | XML | Structured markup |
+| `luftqualitatsdaten-2024.gml` | GML | Geospatial markup |
+| `luftqualitatsdaten-2024.geojson` | GeoJSON | Geospatial data |
+| `luftqualitatsdaten-2024.zip` | ZIP | Archived data package |
+| `luftqualitatsdaten-2024.shp` | Shapefile | ESRI Shapefile |
+| `luftqualitatsdaten-2024.netcdf` | NetCDF | Scientific climate/environment data |
 
 ### UK ONS
 
@@ -366,6 +427,23 @@ stats_data/
           unhcr-population-data-for-afg.csv
       asylum_seekers/
         ...
+  netherlands/                             # --stats netherlands
+    netherlands_tree_index.json
+    .netherlands_state.json
+    nl/
+      group_name/
+        dataset-name/
+          dataset-name_info.json
+          dataset-name.csv
+  germany/                                 # --stats germany
+    germany_tree_index.json
+    .germany_state.json
+    de/
+      group_name/
+        dataset-name/
+          dataset-name_info.json
+          dataset-name.csv
+          dataset-name.gml
 ```
 
 Category folder names are human-readable slugs derived from source titles. Dataset leaf folders keep their canonical code.
@@ -418,24 +496,30 @@ inter_collector/
       api.py             # ONS CMD API endpoint constants
       catalog.py         # CMD API catalog fetcher — builds ONSEntry tree by taxonomy
       downloader.py      # Per-dataset download logic (CSV, XLSX, CSV-W, metadata)
+    ckan/                # Generic CKAN module — shared by Swiss, HDX, Netherlands, Germany
+      __init__.py
+      config.py          # CkanPortalConfig dataclass — parameterises all CKAN portals
+      catalog.py         # Generic CkanEntry tree + fetch_catalog() — works with any CKAN API
+      downloader.py      # Generic download_dataset() — configurable filename strategies
+      source.py          # CkanSource(DataSource) — base class for all CKAN portals
     swiss/
       __init__.py
-      source.py          # SwissSource(DataSource) — config, fetch, download, tree index
-      api.py             # opendata.swiss CKAN API constants
-      catalog.py         # CKAN catalog fetcher — builds SwissEntry tree by group
-      downloader.py      # Per-dataset download logic (CSV, XLS, ODS, JSON)
+      source.py          # SwissSource(CkanSource) + SWISS_CONFIG — thin 60-line wrapper
+    hdx/
+      __init__.py
+      source.py          # HDXSource(CkanSource) + HDX_CONFIG — thin wrapper
+    netherlands/
+      __init__.py
+      source.py          # NetherlandsSource(CkanSource) + NL_CONFIG — thin wrapper
+    germany/
+      __init__.py
+      source.py          # GermanySource(CkanSource) + DE_CONFIG — thin wrapper
     unhcr/
       __init__.py
       source.py          # UNHCRSource(DataSource) — config, fetch, download, tree index
       api.py             # UNHCR Population Statistics API constants
       catalog.py         # Catalog builder — probes endpoints × years
       downloader.py      # Paginated JSON data downloader
-    hdx/
-      __init__.py
-      source.py          # HDXSource(DataSource) — config, fetch, download, tree index
-      api.py             # HDX CKAN API constants
-      catalog.py         # CKAN catalog fetcher — builds HDXEntry tree
-      downloader.py      # Per-dataset resource downloader (CSV, XLSX, XLS)
 ```
 
 ### Adding a new data source
@@ -859,7 +943,7 @@ This tool downloads data from official government statistical offices. All downl
 ### UNHCR (United Nations High Commissioner for Refugees)
 
 - **License**: [Creative Commons Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/)
-- **Terms**: [UNHCR Terms of Use for Datasets](https://www.unhcr.org/what-we-do/data-and-publications/data-and-statistics/terms-use-datasets)
+- **Terms**: [UNHCR Terms of Use for Datasets](https://www.unhcr.org/us/terms-use-datasets)
 - **Commercial use**: Allowed under CC BY 4.0
 - **Attribution**: Required — use: *"UNHCR Refugee Population Statistics Database"*
 - **API access**: Open to all, no credentials required
@@ -872,6 +956,22 @@ This tool downloads data from official government statistical offices. All downl
 - **Commercial use**: Allowed under CC BY-IGO with attribution
 - **Attribution**: Required — credit the data source organization (e.g., UNHCR)
 - **Other licenses**: Individual datasets may use CC BY, CC BY-SA, ODC-ODbL, ODC-BY, ODC-PDDL, or CC0. Check each dataset's metadata.
+
+### Netherlands (data.overheid.nl)
+
+- **License**: [CC0 (Public Domain)](https://creativecommons.org/publicdomain/zero/1.0/) or [CC BY](https://creativecommons.org/licenses/by/4.0/) — varies per dataset
+- **Terms**: [data.overheid.nl](https://data.overheid.nl/en)
+- **Commercial use**: Allowed on all datasets
+- **Attribution**: Required for CC BY datasets; not required for CC0
+- Most Dutch government data is published under CC0 (no restrictions whatsoever)
+
+### Germany (GovData.de)
+
+- **License**: [Datenlizenz Deutschland – Namensnennung 2.0 (DL-DE-BY-2.0)](https://www.govdata.de/dl-de/by-2-0) or [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
+- **Terms**: [GovData License Information](https://www.govdata.de/informationen/lizenzen)
+- **Commercial use**: Allowed — both DL-DE-BY-2.0 and CC BY 4.0 permit commercial reuse
+- **Attribution**: Required — cite the source name and date of access
+- DL-DE-BY-2.0 is equivalent to CC BY in practice — specifically designed for German public sector data
 
 ### This Tool
 
