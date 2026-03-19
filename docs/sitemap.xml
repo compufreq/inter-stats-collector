@@ -7,6 +7,8 @@
   <url><loc>https://compufreq.github.io/inter-stats-collector/docs-swiss.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://compufreq.github.io/inter-stats-collector/docs-unhcr.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://compufreq.github.io/inter-stats-collector/docs-hdx.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://compufreq.github.io/inter-stats-collector/docs-netherlands.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://compufreq.github.io/inter-stats-collector/docs-germany.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://compufreq.github.io/inter-stats-collector/swiss-orgs.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://compufreq.github.io/inter-stats-collector/hdx-orgs.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
 </urlset>

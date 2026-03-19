@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iNiIgZmlsbD0iIzBhMGUxNyIvPjx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9Im1vbm9zcGFjZSIgZm9udC13ZWlnaHQ9ImJvbGQiIGZvbnQtc2l6ZT0iMTYiIGZpbGw9IiNmOTczMTYiPiZndDtfPC90ZXh0Pjwvc3ZnPg==">
+  <title>Download Netherlands Open Data — data.overheid.nl Collector</title>
+  <meta name="description" content="Netherlands Open Data (data.overheid.nl) source documentation for inter-collect: ~6,699 datasets via the CKAN API.">
+  <link rel="canonical" href="https://compufreq.github.io/inter-stats-collector/docs-netherlands.html">
+  <link rel="stylesheet" href="docs.css">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Download Netherlands Open Data — data.overheid.nl Collector">
+  <meta property="og:description" content="Download 3,200+ Netherlands datasets from data.overheid.nl CKAN API. Filter by organization with --scope, choose formats with --formats. 288 organizations.">
+  <meta property="og:url" content="https://compufreq.github.io/inter-stats-collector/docs-netherlands.html">
+  <meta property="og:site_name" content="Inter Stats Collector">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Download Netherlands Open Data — data.overheid.nl Collector">
+  <meta name="twitter:description" content="Download 3,200+ Netherlands datasets from data.overheid.nl CKAN API. Filter by organization with --scope, choose formats with --formats. 288 organizations.">
+  <meta name="keywords" content="Netherlands open data, data.overheid.nl, all organizations, CKAN API, Netherlands statistics, bulk download, Federal Statistical Office">
+  <meta name="robots" content="index, follow">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "name": "Netherlands FSO Data Source Documentation",
+    "description": "Download 3,200+ Netherlands datasets from data.overheid.nl CKAN API. Filter by organization with --scope, choose formats with --formats. 288 organizations.",
+    "url": "https://compufreq.github.io/inter-stats-collector/docs-netherlands.html",
+    "isPartOf": {
+      "@type": "WebSite",
+      "name": "Inter Stats Collector",
+      "url": "https://compufreq.github.io/inter-stats-collector/"
+    },
+    "author": {
+      "@type": "Person",
+      "name": "Alaa Alhorani"
+    }
+  }
+  </script>
+</head>
+<body>
+
+<nav>
+  <a href="./" class="logo"><span>&gt;_</span> inter-stats-collector</a>
+  <button class="burger" id="burger" aria-label="Menu">
+    <svg class="burger-icon" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    <svg class="close-icon" viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg>
+  </button>
+  <div class="links" id="nav-links">
+    <a href="./">Home</a>
+    <a href="https://github.com/compufreq/inter-stats-collector/wiki" target="_blank">Wiki</a>
+    <div class="dropdown">
+      <button class="dropdown-toggle">Docs Hub <span class="caret">&#9660;</span></button>
+      <div class="dropdown-menu">
+        <a href="docs-cli.html">CLI Reference</a>
+        <div class="dd-sep"></div>
+        <a href="docs-eurostat.html">Eurostat</a>
+        <a href="docs-ons.html">UK ONS</a>
+        <a href="docs-netherlands.html">Netherlands FSO</a>
+        <a href="docs-unhcr.html">UNHCR</a>
+        <a href="docs-hdx.html">HDX</a>
+        <div class="dd-sep"></div>
+        <a href="netherlands-orgs.html">Netherlands Organizations</a>
+        <a href="hdx-orgs.html">HDX Organizations</a>
+      </div>
+    </div>
+    <a href="https://github.com/compufreq/inter-stats-collector" class="gh-btn"><svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>GitHub</a>
+  </div>
+</nav>
+
+
+<div class="doc-layout">
+  <aside class="sidebar">
+    <div class="group">Sources</div>
+    <a href="docs-eurostat.html">Eurostat</a>
+    <a href="docs-ons.html">UK ONS</a>
+    <a href="docs-netherlands.html" class="active">Netherlands FSO</a>
+    <a href="docs-unhcr.html">UNHCR</a>
+    <a href="docs-hdx.html">HDX</a>
+    <div class="sep"></div>
+    <div class="group">Org Browsers</div>
+    <a href="netherlands-orgs.html">Netherlands Organizations</a>
+    <a href="hdx-orgs.html">HDX Organizations</a>
+    <div class="sep"></div>
+    <div class="group">This Page</div>
+    <a href="#api-endpoints">API Endpoints</a>
+    <a href="#commands-usage">Commands &amp; Usage</a>
+    <a href="#flag-compatibility">Flag Compatibility</a>
+    <a href="#quick-reference-all-flags">Quick Reference</a>
+    <a href="#scope-organization-filter">--scope Filter</a>
+    <a href="#formats">--formats</a>
+    <a href="#download-datasets">Download Datasets</a>
+    <a href="#check-collection-status">Check Status</a>
+    <a href="#view-category-tree">View Tree</a>
+    <a href="#rename-folders">Rename Folders</a>
+    <a href="#files-per-dataset">Files Per Dataset</a>
+    <a href="#output-structure">Output Structure</a>
+    <a href="#license">License</a>
+  </aside>
+
+  <main class="doc-content">
+    <h1>Netherlands FSO (data.overheid.nl)</h1>
+    <p class="subtitle">CLI flag: <code>--stats netherlands</code> &middot; ~1,977 (all organizations) / ~6,699 (all orgs) datasets &middot; <a href="https://handbook.data.overheid.nl/de/content/nutzen/api-nutzen.html">data.overheid.nl CKAN API</a> &middot; No authentication required</p>
+
+    <h2 id="api-endpoints">API Endpoints</h2>
+    <p>Base URL: <code>https://ckan.data.overheid.nl/api/3/action/</code></p>
+    <table>
+      <tr><th>Endpoint</th><th>URL</th><th>Purpose</th></tr>
+      <tr><td>Package Search</td><td><code>GET /api/3/action/package_search</code></td><td>Paginated dataset search</td></tr>
+      <tr><td>Package Show</td><td><code>GET /api/3/action/package_show</code></td><td>Single dataset detail</td></tr>
+      <tr><td>Organization List</td><td><code>GET /api/3/action/organization_list</code></td><td>288 government organizations</td></tr>
+      <tr><td>Group List</td><td><code>GET /api/3/action/group_list</code></td><td>14 thematic categories</td></tr>
+    </table>
+
+    <h2 id="commands-usage">Commands &amp; Usage</h2>
+
+    <h3 id="flag-compatibility">Flag Compatibility</h3>
+    <table>
+      <tr><th>Flag</th><th>Supported</th><th>Notes</th></tr>
+      <tr><td><code>--scope</code></td><td><span class="badge badge-yes">&#10003;</span></td><td>Organization filter: slug or <code>all</code> (default: all organizations)</td></tr>
+      <tr><td><code>--formats</code></td><td><span class="badge badge-yes">&#10003;</span></td><td>Comma-separated formats (default: csv,xls,xlsx,json,xml,zip,geojson)</td></tr>
+      <tr><td><code>--year-from</code> / <code>--year-to</code></td><td><span class="badge badge-no">&#10007;</span></td><td>Not applicable — UNHCR only</td></tr>
+      <tr><td><code>--concurrency</code></td><td><span class="badge badge-yes">&#10003;</span></td><td>Default 5; no aggressive rate limiting</td></tr>
+      <tr><td><code>--verify</code></td><td><span class="badge badge-yes">&#10003;</span></td><td>Checks that data files (CSV/XLS/XLSX/JSON/XML/ZIP/GeoJSON) exist on disk</td></tr>
+      <tr><td><code>--dry-run</code></td><td><span class="badge badge-yes">&#10003;</span></td><td>Preview without downloading</td></tr>
+      <tr><td><code>--retry-failed</code></td><td><span class="badge badge-yes">&#10003;</span></td><td>Retry previously failed datasets</td></tr>
+      <tr><td><code>--filter-path</code></td><td><span class="badge badge-yes">&#10003;</span></td><td>Filter by group path</td></tr>
+      <tr><td><code>--filter-codes</code></td><td><span class="badge badge-yes">&#10003;</span></td><td>Filter by CKAN package names</td></tr>
+      <tr><td><code>--folder-style</code></td><td><span class="badge badge-yes">&#10003;</span></td><td><code>display</code> (slugified) or <code>code</code> (raw CKAN names)</td></tr>
+    </table>
+
+    <h3 id="quick-reference-all-flags">Quick Reference (All Flags)</h3>
+    <pre><code># collect — all applicable flags for Netherlands FSO
+inter-collect --stats netherlands \
+  --scope &lt;ORG_SLUG:str|all&gt; \
+  --formats &lt;csv,xls,xlsx,json,xml,zip,geojson&gt; \
+  collect \
+  -o &lt;OUTPUT_DIR&gt; \
+  -c &lt;CONCURRENCY:int&gt; \
+  -d &lt;DELAY:seconds&gt; \
+  --skip-existing | --no-skip-existing \
+  --retry-failed \
+  --filter-path &lt;GROUP_PATH:str&gt; \
+  --filter-codes &lt;PACKAGE1,PACKAGE2,...&gt; \
+  --dry-run \
+  --verify \
+  --folder-style &lt;display|code&gt; \
+  -v
+
+# status — show collection progress
+inter-collect --stats netherlands status -o &lt;OUTPUT_DIR&gt;
+
+# tree — display category hierarchy
+inter-collect --stats netherlands tree --depth &lt;DEPTH:int&gt; -v
+
+# rename — switch folder naming style
+inter-collect --stats netherlands rename &lt;display|code&gt; -o &lt;OUTPUT_DIR&gt; --dry-run -v</code></pre>
+    <p><strong>Not applicable for Netherlands FSO:</strong> <code>--year-from</code>, <code>--year-to</code> (silently ignored)</p>
+
+    <h3 id="scope-organization-filter"><code>--scope</code> (Organization Filter)</h3>
+    <p>Use <code>--scope</code> to select which organization's datasets to download. Accepts any data.overheid.nl organization slug.</p>
+    <ul>
+      <li><strong>(default)</strong>: all organizations only — <code></code> (~3,277 datasets)</li>
+      <li><code>--scope all</code>: All 288 organizations (~6,700+ datasets with downloadable resources)</li>
+      <li><code>--scope ORG_SLUG</code>: Any specific organization</li>
+    </ul>
+    <p><a href="netherlands-orgs.html">Browse all Netherlands organizations</a> to find the right scope value.</p>
+
+    <h4>Netherlands Federal Agencies</h4>
+    <table>
+      <tr><th>Scope Value</th><th>Organization</th><th>Datasets</th></tr>
+      <tr><td><code></code></td><td>Federal Statistical Office (all organizations) <strong>(default)</strong></td><td>3,277</td></tr>
+      <tr><td><code>agis_service_center</code></td><td>AGIS Service Center</td><td>740</td></tr>
+      <tr><td><code>amt-fuer-statistik-fl</code></td><td>Office of Statistics (Liechtenstein)</td><td>459</td></tr>
+      <tr><td><code>amt-geoinformation-sz</code></td><td>Office for Geoinformation (Schwyz)</td><td>236</td></tr>
+      <tr><td><code>amt-fuer-geoinformation-des-kantons-bern</code></td><td>Geoinformation Office (Bern)</td><td>205</td></tr>
+      <tr><td><code>amt-fuer-raumentwicklung-und-geoinformation-areg-kanton-st-gallen</code></td><td>Spatial Development (St. Gallen)</td><td>186</td></tr>
+      <tr><td><code>bundesamt-fur-landestopografie-netherlandstopo</code></td><td>Federal Office of Topography (netherlandstopo)</td><td>180</td></tr>
+      <tr><td><code>bundesamt-fur-energie-bfe</code></td><td>Federal Office of Energy (BFE)</td><td>124</td></tr>
+      <tr><td><code>bundesamt-fur-kommunikation-bakom</code></td><td>Federal Office of Communications (BAKOM)</td><td>121</td></tr>
+      <tr><td><code>bundesamt-fur-gesundheit-bag</code></td><td>Federal Office of Public Health (BAG)</td><td>47</td></tr>
+    </table>
+    <p>288 organizations total. Use <code>--scope all</code> to include everything, or query the <a href="https://ckan.data.overheid.nl/api/3/action/organization_list?all_fields=true">data.overheid.nl Organization API</a> for the full list.</p>
+
+    <h3 id="formats"><code>--formats</code></h3>
+    <ul>
+      <li>Default: <code>csv,xls,xlsx,json,xml,zip,geojson</code> (all downloadable data formats)</li>
+      <li>Example: <code>--formats csv</code> for CSV only (~308 datasets)</li>
+      <li>Skips HTML, SERVICE, PDF, and other non-data resources automatically</li>
+    </ul>
+
+    <h3 id="download-datasets">Download Datasets</h3>
+    <pre><code># Download all all organizations datasets, all formats (default)
+inter-collect --stats netherlands collect
+
+# Preview what would be downloaded
+inter-collect --stats netherlands collect --dry-run
+
+# Verify completed datasets have actual data files, re-download if missing
+inter-collect --stats netherlands collect --verify
+
+# CSV only
+inter-collect --stats netherlands --formats csv collect
+
+# All organizations
+inter-collect --stats netherlands --scope all collect
+
+# Specific org: netherlandstopo
+inter-collect --stats netherlands --scope bundesamt-fur-landestopografie-netherlandstopo collect
+
+# Specific org: Federal Office of Energy, CSV only
+inter-collect --stats netherlands --scope bundesamt-fur-energie-bfe --formats csv collect
+
+# Download specific datasets by CKAN package name
+inter-collect --stats netherlands collect --filter-codes rohholzbilanz3,erwerbstatige-inlandkonzept
+
+# Retry previously failed datasets
+inter-collect --stats netherlands collect --retry-failed</code></pre>
+
+    <h3 id="check-collection-status">Check Collection Status</h3>
+    <pre><code>inter-collect --stats netherlands status</code></pre>
+
+    <h3 id="view-category-tree">View Category Tree</h3>
+    <pre><code>inter-collect --stats netherlands tree
+inter-collect --stats netherlands tree --depth 4</code></pre>
+
+    <h3 id="rename-folders">Rename Folders</h3>
+    <pre><code>inter-collect --stats netherlands rename code --dry-run
+inter-collect --stats netherlands rename display</code></pre>
+
+    <h2 id="files-per-dataset">Files Per Dataset</h2>
+    <table>
+      <tr><th>File</th><th>Format</th><th>Description</th></tr>
+      <tr><td><code>{code}_info.json</code></td><td>JSON</td><td>Catalog snapshot (organization, license, resource URLs)</td></tr>
+      <tr><td><code>{code}.csv</code></td><td>CSV</td><td>Data in CSV format (if available)</td></tr>
+      <tr><td><code>{code}.xls</code></td><td>Excel</td><td>Data in Excel format (if available)</td></tr>
+      <tr><td><code>{code}.ods</code></td><td>ODS</td><td>Data in ODS format (if available)</td></tr>
+      <tr><td><code>{code}.json</code></td><td>JSON</td><td>Data in JSON format (if available)</td></tr>
+    </table>
+    <p>When multiple resources of the same format exist in different languages, filenames include a language suffix (e.g., <code>dataset_de.csv</code>, <code>dataset_fr.csv</code>).</p>
+
+    <h2 id="output-structure">Output Structure</h2>
+    <pre>stats_data/netherlands/
+  netherlands_tree_index.json
+  .netherlands_state.json
+  netherlands_open_data/
+    agriculture_fisheries_forestry_food/
+      rohholzbilanz3/
+        rohholzbilanz3_info.json
+        rohholzbilanz3.csv
+        rohholzbilanz3.xls
+    population_society/
+      erwerbstatige-inlandkonzept/
+        erwerbstatige-inlandkonzept_info.json
+        erwerbstatige-inlandkonzept.csv
+        erwerbstatige-inlandkonzept.xls</pre>
+
+    <h2 id="license">License</h2>
+    <p><a href="https://data.overheid.nl/en/terms-of-use">Opendata.netherlands Terms of Use</a></p>
+    <table>
+      <tr><th>Term</th><th>Details</th></tr>
+      <tr><td>Commercial use</td><td><strong>Varies by dataset</strong> — some allow free commercial reuse, others require prior authorisation</td></tr>
+      <tr><td>Attribution</td><td>Always required</td></tr>
+      <tr><td>all organizations Terms</td><td><a href="https://www.bfs.admin.ch/bfs/en/home/fso/netherlands-federal-statistical-office/terms-of-use.html">bfs.admin.ch terms of use</a></td></tr>
+    </table>
+  </main>
+</div>
+
+<footer>
+  <p>inter-stats-collector &middot; Built by <a href="https://github.com/compufreq">Alaa Alhorani</a> &middot; Licensed under <a href="https://github.com/compufreq/inter-stats-collector/blob/main/LICENSE">BSL 1.1</a> &middot; <a href="https://github.com/compufreq/inter-stats-collector">GitHub</a> &middot; <a href="https://github.com/compufreq/inter-stats-collector/wiki">Wiki</a></p>
+</footer>
+
+<button class="sidebar-toggle" aria-label="Toggle sidebar">&#9776;</button>
+<script src="docs.js"></script>
+</body>
+</html>

@@ -12,6 +12,8 @@ Currently supports:
 | **UK ONS** | `--stats uk` | ✅ Ready | ~337 datasets |
 | **UNHCR** | `--stats unhcr` | ✅ Ready | ~450 datasets (6 endpoints × 75 years) |
 | **HDX** (Humanitarian Data Exchange) | `--stats hdx` | ✅ Ready | ~244 UNHCR datasets |
+| **Netherlands** (data.overheid.nl) | `--stats netherlands` | ✅ Ready | ~12,245 datasets |
+| **Germany** (GovData.de) | `--stats germany` | ✅ Ready | ~92,722 datasets |
 
 ---
 
@@ -63,7 +65,7 @@ git clone https://github.com/compufreq/inter-stats-collector.git
 cd inter-stats-collector
 pip install -e .
 
-# Download from ALL sources (default — Eurostat + Swiss + UK ONS + UNHCR + HDX)
+# Download from ALL sources (default)
 inter-collect collect
 
 # Preview what would be downloaded across all sources
@@ -74,10 +76,15 @@ inter-collect --stats europe collect          # Eurostat only
 inter-collect --stats switzerland collect     # Swiss FSO only
 inter-collect --stats uk collect              # UK ONS only
 inter-collect --stats unhcr collect           # UNHCR refugee statistics
-inter-collect --stats hdx collect             # HDX humanitarian data (UNHCR)
+inter-collect --stats hdx collect             # HDX humanitarian data
+inter-collect --stats netherlands collect     # Netherlands open data
+inter-collect --stats germany collect         # Germany GovData
 
 # UNHCR: download specific year range
 inter-collect --stats unhcr --year-from 2020 --year-to 2023 collect
+
+# CKAN sources: filter by organization
+inter-collect --stats germany --scope statistisches-bundesamt-destatis collect
 
 # Swiss: download only CSV files from all organizations
 inter-collect --stats switzerland --scope all --formats csv collect

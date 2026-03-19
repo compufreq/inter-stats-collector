@@ -559,7 +559,7 @@
 
 <!-- Hero -->
 <header class="hero">
-  <div class="badge">Open Source &middot; Python CLI &middot; 5 Data Sources</div>
+  <div class="badge">Open Source &middot; Python CLI &middot; 7 Data Sources</div>
   <h1>Bulk-download <span class="gradient">entire statistical databases</span> in one command</h1>
   <p>A Python CLI that downloads every dataset, in multiple formats, with full metadata from official government and international organisation APIs.</p>
   <div class="hero-actions">
@@ -595,11 +595,11 @@
 <!-- Stats counter -->
 <div class="stats-bar fade-in">
   <div class="stat">
-    <div class="number" data-target="15000">0<span class="plus">+</span></div>
+    <div class="number" data-target="120000">0<span class="plus">+</span></div>
     <div class="label">Datasets Available</div>
   </div>
   <div class="stat">
-    <div class="number" data-target="5">0</div>
+    <div class="number" data-target="7">0</div>
     <div class="label">Data Sources</div>
   </div>
   <div class="stat">
@@ -662,6 +662,24 @@
         <span class="meta-item"><span class="dot"></span> ~19,000+ datasets</span>
         <span class="meta-item">CKAN API</span>
         <span class="meta-item">CC BY-IGO</span>
+      </div>
+    </div>
+    <div class="source-card fade-in" style="--card-accent: #f97316;">
+      <h3>Netherlands <span class="source-tag">--stats netherlands</span></h3>
+      <p class="desc">Dutch national open data portal (data.overheid.nl). Government, transport, environment, and statistical datasets.</p>
+      <div class="meta">
+        <span class="meta-item"><span class="dot"></span> ~12,245 datasets</span>
+        <span class="meta-item">CKAN API</span>
+        <span class="meta-item">CC0 / CC BY</span>
+      </div>
+    </div>
+    <div class="source-card fade-in" style="--card-accent: #eab308;">
+      <h3>Germany <span class="source-tag">--stats germany</span></h3>
+      <p class="desc">GovData.de — Germany's open government data portal. Federal, state, and municipal datasets including geospatial data.</p>
+      <div class="meta">
+        <span class="meta-item"><span class="dot"></span> ~92,722 datasets</span>
+        <span class="meta-item">CKAN API</span>
+        <span class="meta-item">DL-DE-BY-2.0</span>
       </div>
     </div>
   </div>
@@ -741,11 +759,13 @@
   <span class="purple">|</span>           <span class="purple">+-></span> source.<span class="green">download_dataset</span>(entry)
   <span class="purple">|</span>
   <span class="purple">+-></span> <span class="highlight">sources/</span>
-        <span class="cyan">eurostat/</span>  SDMX 2.1 API    ~10,400 datasets
-        <span class="cyan">swiss/</span>     CKAN API        ~3,277 datasets
-        <span class="cyan">ons/</span>       CMD API         ~337 datasets
-        <span class="cyan">unhcr/</span>     Population API  ~450 datasets
-        <span class="cyan">hdx/</span>       CKAN API        ~19,000+ datasets</div>
+        <span class="cyan">eurostat/</span>      SDMX 2.1 API    ~10,400 datasets
+        <span class="cyan">swiss/</span>         CKAN API        ~1,977 datasets
+        <span class="cyan">ons/</span>           CMD API         ~337 datasets
+        <span class="cyan">unhcr/</span>         Population API  ~450 datasets
+        <span class="cyan">hdx/</span>           CKAN API        ~244 datasets
+        <span class="cyan">netherlands/</span>   CKAN API        ~12,245 datasets
+        <span class="cyan">germany/</span>       CKAN API        ~92,722 datasets</div>
 </section>
 
 <!-- License -->
