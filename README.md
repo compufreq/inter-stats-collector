@@ -975,7 +975,7 @@ This tool downloads data from official government statistical offices. All downl
 
 The tool is a download client only — it does not bundle or redistribute any data. The data licenses above govern your use of the downloaded data, not the tool itself.
 
-### This Tool License
+## This Tool License
 
 This tool is licensed under the **Business Source License 1.1 (BSL 1.1)**.
 
