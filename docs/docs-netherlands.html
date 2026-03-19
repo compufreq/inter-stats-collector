@@ -101,10 +101,10 @@
 
   <main class="doc-content">
     <h1>Netherlands FSO (data.overheid.nl)</h1>
-    <p class="subtitle">CLI flag: <code>--stats netherlands</code> &middot; ~1,977 (all organizations) / ~6,699 (all orgs) datasets &middot; <a href="https://handbook.data.overheid.nl/de/content/nutzen/api-nutzen.html">data.overheid.nl CKAN API</a> &middot; No authentication required</p>
+    <p class="subtitle">CLI flag: <code>--stats netherlands</code> &middot; ~12,245 datasets &middot; <a href="https://data.overheid.nl/en">data.overheid.nl CKAN API</a> &middot; No authentication required</p>
 
     <h2 id="api-endpoints">API Endpoints</h2>
-    <p>Base URL: <code>https://ckan.data.overheid.nl/api/3/action/</code></p>
+    <p>Base URL: <code>https://data.overheid.nl/data/api/3/action/</code></p>
     <table>
       <tr><th>Endpoint</th><th>URL</th><th>Purpose</th></tr>
       <tr><td>Package Search</td><td><code>GET /api/3/action/package_search</code></td><td>Paginated dataset search</td></tr>
@@ -118,7 +118,7 @@
     <h3 id="flag-compatibility">Flag Compatibility</h3>
     <table>
       <tr><th>Flag</th><th>Supported</th><th>Notes</th></tr>
-      <tr><td><code>--scope</code></td><td><span class="badge badge-yes">&#10003;</span></td><td>Organization filter: slug or <code>all</code> (default: all organizations)</td></tr>
+      <tr><td><code>--scope</code></td><td><span class="badge badge-yes">&#10003;</span></td><td>Organization filter: slug or <code>all</code> (default: all)</td></tr>
       <tr><td><code>--formats</code></td><td><span class="badge badge-yes">&#10003;</span></td><td>Comma-separated formats (default: csv,xls,xlsx,json,xml,zip,geojson)</td></tr>
       <tr><td><code>--year-from</code> / <code>--year-to</code></td><td><span class="badge badge-no">&#10007;</span></td><td>Not applicable — UNHCR only</td></tr>
       <tr><td><code>--concurrency</code></td><td><span class="badge badge-yes">&#10003;</span></td><td>Default 5; no aggressive rate limiting</td></tr>
@@ -181,7 +181,7 @@ inter-collect --stats netherlands rename &lt;display|code&gt; -o &lt;OUTPUT_DIR&
       <tr><td><code>bundesamt-fur-kommunikation-bakom</code></td><td>Federal Office of Communications (BAKOM)</td><td>121</td></tr>
       <tr><td><code>bundesamt-fur-gesundheit-bag</code></td><td>Federal Office of Public Health (BAG)</td><td>47</td></tr>
     </table>
-    <p>288 organizations total. Use <code>--scope all</code> to include everything, or query the <a href="https://ckan.data.overheid.nl/api/3/action/organization_list?all_fields=true">data.overheid.nl Organization API</a> for the full list.</p>
+    <p>Multiple organizations available. Use <code>--scope all</code> to include everything, or query the <a href="https://data.overheid.nl/data/api/3/action/organization_list?all_fields=true">data.overheid.nl Organization API</a> for the full list.</p>
 
     <h3 id="formats"><code>--formats</code></h3>
     <ul>
@@ -257,7 +257,7 @@ inter-collect --stats netherlands rename display</code></pre>
         erwerbstatige-inlandkonzept.xls</pre>
 
     <h2 id="license">License</h2>
-    <p><a href="https://data.overheid.nl/en/terms-of-use">Opendata.netherlands Terms of Use</a></p>
+    <p><a href="https://data.overheid.nl/en">Netherlands Open Data — Terms of Use</a></p>
     <table>
       <tr><th>Term</th><th>Details</th></tr>
       <tr><td>Commercial use</td><td><strong>Varies by dataset</strong> — some allow free commercial reuse, others require prior authorisation</td></tr>
