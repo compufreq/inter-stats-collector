@@ -910,7 +910,7 @@ All endpoints used by this tool are part of the official [Eurostat SDMX 2.1 Diss
 
 ---
 
-## Data Licenses & Attribution
+# Data Licenses & Attribution
 
 This tool downloads data from official government statistical offices. All downloaded data remains the intellectual property of the respective source and is subject to its license terms. **You are responsible for complying with these terms when using the data.**
 
@@ -975,7 +975,7 @@ This tool downloads data from official government statistical offices. All downl
 
 The tool is a download client only — it does not bundle or redistribute any data. The data licenses above govern your use of the downloaded data, not the tool itself.
 
-## This Tool License
+# This Tool License
 
 This tool is licensed under the **Business Source License 1.1 (BSL 1.1)**.
 
