@@ -14,6 +14,8 @@ SOURCE_REGISTRY: dict[str, tuple[str, str]] = {
     "switzerland": ("inter_collector.sources.swiss.source", "SwissSource"),
     "unhcr": ("inter_collector.sources.unhcr.source", "UNHCRSource"),
     "hdx": ("inter_collector.sources.hdx.source", "HDXSource"),
+    "netherlands": ("inter_collector.sources.netherlands.source", "NetherlandsSource"),
+    "germany": ("inter_collector.sources.germany.source", "GermanySource"),
 }
 
 

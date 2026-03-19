@@ -33,7 +33,7 @@ def _setup_logging(verbose: bool) -> None:
 
 
 @click.group()
-@click.option("--stats", type=click.Choice(["all", "europe", "uk", "switzerland", "unhcr", "hdx"]),
+@click.option("--stats", type=click.Choice(["all", "europe", "uk", "switzerland", "unhcr", "hdx", "netherlands", "germany"]),
               default="all", show_default=True,
               help="Statistical data source to use")
 @click.option("--scope", default=None, type=str,
@@ -58,10 +58,12 @@ def main(ctx, stats, scope, formats, year_from, year_to):
       switzerland  Swiss FSO via opendata.swiss — ~3,200+ datasets
       uk           UK ONS — Office for National Statistics
       unhcr        UNHCR Refugee Statistics — 6 endpoints × 75 years
-      hdx          HDX Humanitarian Data Exchange — 481 organizations
+      hdx          HDX Humanitarian Data Exchange — 400+ organizations
+      netherlands  Netherlands open data (data.overheid.nl) — ~18,900 datasets
+      germany      Germany GovData (govdata.de) — ~149,000 datasets
 
     \b
-    Swiss/HDX --scope option (organization filter):
+    CKAN --scope option (organization filter, for Swiss/HDX/NL/DE):
       (default)    BFS for Swiss, UNHCR for HDX
       --scope all  All organizations on the platform
       --scope ORG  Specific org slug (e.g., wfp, iom, world-bank-group)
