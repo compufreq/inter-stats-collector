@@ -156,11 +156,21 @@ def _extract_resources(
     """
     result = []
     for res in pkg.get("resources", []):
-        fmt = (res.get("format") or "").upper()
-        # Handle EU authority URI format labels, e.g.:
-        #   "http://publications.europa.eu/resource/authority/file-type/CSV" → "CSV"
+        fmt = (res.get("format") or "").strip().upper()
+        # Handle URI-style format labels:
+        #   EU authority: "http://publications.europa.eu/resource/authority/file-type/CSV" → "CSV"
+        #   IANA media:   "https://www.iana.org/assignments/media-types/text/csv" → "CSV"
         if fmt.startswith("HTTP"):
+            last_segment = fmt.rsplit("/", 1)[-1].upper()
+            # IANA media types have format like "text/csv" → extract after "/"
+            # EU authority has "CSV" directly as last segment
+            fmt = last_segment
+        # Also handle "text/csv+extended" style labels
+        if "/" in fmt:
             fmt = fmt.rsplit("/", 1)[-1].upper()
+        # Strip MIME parameters like "+extended"
+        if "+" in fmt:
+            fmt = fmt.split("+")[0]
         if fmt not in download_formats:
             continue
         # Prefer download_url (direct file link), fall back to url
