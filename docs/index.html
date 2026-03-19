@@ -721,7 +721,7 @@
     <div class="line"><span class="cmd">pip install -e .</span></div>
     <div class="line"></div>
     <div class="line"><span class="comment"># Start downloading</span></div>
-    <div class="line"><span class="cmd">inter-collect collect</span></div>
+    <div class="line"><span class="cmd">inter-collect --stats europe collect</span></div>
   </div>
 </section>
 
@@ -835,7 +835,7 @@ statsObserver.observe(document.querySelector('.stats-bar'));
 
 // Copy button
 function copyInstall(btn) {
-  const text = 'git clone https://github.com/compufreq/inter-stats-collector.git\ncd inter-stats-collector\npip install -e .\ninter-collect collect';
+  const text = 'git clone https://github.com/compufreq/inter-stats-collector.git\ncd inter-stats-collector\npip install -e .\ninter-collect --stats europe collect';
   navigator.clipboard.writeText(text).then(() => {
     btn.textContent = 'Copied!';
     btn.classList.add('copied');
