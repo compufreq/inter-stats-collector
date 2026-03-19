@@ -973,7 +973,9 @@ This tool downloads data from official government statistical offices. All downl
 - **Attribution**: Required — cite the source name and date of access
 - DL-DE-BY-2.0 is equivalent to CC BY in practice — specifically designed for German public sector data
 
-### This Tool
+The tool is a download client only — it does not bundle or redistribute any data. The data licenses above govern your use of the downloaded data, not the tool itself.
+
+### This Tool License
 
 This tool is licensed under the **Business Source License 1.1 (BSL 1.1)**.
 
@@ -984,5 +986,3 @@ This tool is licensed under the **Business Source License 1.1 (BSL 1.1)**.
 - **Licensor**: Alaa Alhorani
 
 See the [LICENSE](LICENSE) file for the full text.
-
-This tool is a download client only — it does not bundle or redistribute any data. The data licenses listed above govern your use of the downloaded data, not the tool itself.
